@@ -41,7 +41,7 @@ StackExchangeAlexa.prototype.intentHandlers = {
 };
 
 exports.handler = function (event, context) {
-    var StackExchangeAlexa = new StackExchangeAlexa();
-    StackExchangeAlexa.execute(event, context);
+    var stackExchangeAlexa = new StackExchangeAlexa();
+    stackExchangeAlexa.execute(event, context);
 };
 
