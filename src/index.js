@@ -1,5 +1,10 @@
 var APP_ID = "amzn1.ask.skill.03d9d112-9807-48d0-bbea-4715817a5448";
 
+var getApiUrl = function(route) {
+    var stackExchangeApiRoot = "https://api.stackexchange.com/2.2/sites/"
+    return stackExchangeApiRoot + route;
+}
+
 var AlexaSkill = require('./AlexaSkill');
 
 var StackExchangeAlexa = function () {
@@ -18,7 +23,7 @@ StackExchangeAlexa.prototype.eventHandlers.onSessionStarted = function (sessionS
 
 StackExchangeAlexa.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
     console.log("StackExchangeAlexa onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
-    var speechOutput = "Welcome to Stack Exchange!";
+    var speechOutput = "Welcome to Stack Exchange! Say the name of a site, such as cooking, or say all sites for a list.";
     var repromptText = "Pick the name of a site, or say all sites.";
     response.ask(speechOutput, repromptText);
 };
@@ -33,7 +38,10 @@ StackExchangeAlexa.prototype.intentHandlers = {
     // register custom intent handlers
     "StackExchangeIntent": function (intent, session, response) {
         // todo pull all site via SE API
-        response.tellWithCard("Cooking, Apple.", "Cooking, Apple.", "Cooking, Apple.");
+
+        //var url = getApiUrl("sites");
+        response.tell("Cooking, Apple, Server Fault.");
+        //response.tellWithCard("Cooking, Apple.", "Cooking, Apple.", "Cooking, Apple.");
     },
     "AMAZON.HelpIntent": function (intent, session, response) {
         response.ask("Browse over 100 expert communities on the Stack Exchange network.", "Browse over 100 expert communities on the Stack Exchange network.");
