@@ -3,6 +3,20 @@
   "version": 2,
   "targets": {
     ".NETCoreApp,Version=v1.1": {
+      "Amazon.Lambda.Core/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Console": "4.0.0",
+          "System.IO": "4.1.0",
+          "System.Runtime": "4.1.0"
+        },
+        "compile": {
+          "lib/netstandard1.3/Amazon.Lambda.Core.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Amazon.Lambda.Core.dll": {}
+        }
+      },
       "Amazon.Lambda.Tools/1.2.0-preview1": {
         "type": "package",
         "dependencies": {
@@ -2381,6 +2395,27 @@
     }
   },
   "libraries": {
+    "Amazon.Lambda.Core/1.0.0": {
+      "sha512": "+pBYGHaOaDAhu2j8BA5MhKLwxZM7lgmTSroGyCzEqWMBx+uc+QtpED2ShCAkKjKeedXH+LvJpQAUkEtW7rfcgQ==",
+      "type": "package",
+      "path": "Amazon.Lambda.Core/1.0.0",
+      "files": [
+        "Amazon.Lambda.Core.1.0.0.nupkg.sha512",
+        "Amazon.Lambda.Core.nuspec",
+        "lib/netstandard1.3/Amazon.Lambda.Core.dll",
+        "lib/netstandard1.3/Amazon.Lambda.Core.pdb",
+        "lib/netstandard1.3/Amazon.Lambda.Core.xml",
+        "src/Amazon.Lambda.Core/IClientApplication.cs",
+        "src/Amazon.Lambda.Core/IClientContext.cs",
+        "src/Amazon.Lambda.Core/ICognitoIdentity.cs",
+        "src/Amazon.Lambda.Core/ILambdaContext.cs",
+        "src/Amazon.Lambda.Core/ILambdaLogger.cs",
+        "src/Amazon.Lambda.Core/ILambdaSerializer.cs",
+        "src/Amazon.Lambda.Core/LambdaLogger.cs",
+        "src/Amazon.Lambda.Core/LambdaSerializerAttribute.cs",
+        "src/Amazon.Lambda.Core/Properties/AssemblyInfo.cs"
+      ]
+    },
     "Amazon.Lambda.Tools/1.2.0-preview1": {
       "sha512": "PE3IYQ3M/2WDZY169GNSWtBbIXjUfN6w01Po42gWzdla/z+g8DutlXVYI+OMuuLNlMTdNfzIho736yS/sCWXrg==",
       "type": "package",
@@ -7427,6 +7462,7 @@
   },
   "projectFileDependencyGroups": {
     "": [
+      "Amazon.Lambda.Core >= 1.0.*",
       "Amazon.Lambda.Tools >= 1.2.0-preview1"
     ],
     ".NETCoreApp,Version=v1.1": [
