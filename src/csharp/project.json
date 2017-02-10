@@ -5,7 +5,8 @@
         "type" :"build",
         "version":"1.2.0-preview1"
       },
-      "Amazon.Lambda.Core" : "1.0.0*"
+      "Amazon.Lambda.Core" : "1.0.0*",
+      "Amazon.Lambda.Serialization.Json": "1.0.0"
   },
   "tools": {
     "Amazon.Lambda.Tools" : "1.2.0-preview1"

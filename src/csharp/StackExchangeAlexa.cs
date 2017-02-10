@@ -4,11 +4,9 @@ namespace StackExchange.Alexa
 {
 	public class Skill 
 	{
-	    public string MyHandler(int count, ILambdaContext context) 
+	    public string MyHandler(int count) 
 	    {
-	        var logger = context.Logger;
-	        logger.log("received : " + count);
-	        return count.ToString();
+	        return "Hello!! " + count.ToString();
 	    }
 	}
 
