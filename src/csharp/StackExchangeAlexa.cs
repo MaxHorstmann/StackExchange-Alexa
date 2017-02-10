@@ -1,12 +1,15 @@
-﻿using System;
+﻿using Amazon.Lambda.Core; 
 
-namespace ConsoleApplication
+namespace StackExchange.Alexa
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            Console.WriteLine("Hello World!");
-        }
-    }
+	public class Skill 
+	{
+	    public string MyHandler(int count, ILambdaContext context) 
+	    {
+	        var logger = context.Logger;
+	        logger.log("received : " + count);
+	        return count.ToString();
+	    }
+	}
+
 }
