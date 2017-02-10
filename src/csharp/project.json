@@ -5,6 +5,9 @@
     "emitEntryPoint": true
   },
   "dependencies": {},
+  "tools": {
+    "Amazon.Lambda.Tools" : "1.2.0-preview1"
+  },
   "frameworks": {
     "netcoreapp1.1": {
       "dependencies": {
