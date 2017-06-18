@@ -1,0 +1,7 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - dotnet restore
+      - dotnet lambda deploy-function --region us-east-1 -c Release -f netcoreapp1.0 -frun dotnetcore1.0 -fh MyProject::MyNamespace.MyClass::MyFunction -fn myTestLambda
