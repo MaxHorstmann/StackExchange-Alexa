@@ -7,13 +7,13 @@ Amazon Alexa skill for doing some things on Stack Overflow and the Stack Exchang
   - Project name: Stack Exchange Alexa
   - Source provider: GitHub
   - Repository: Use a repository in my account
-  - Choose a repository: <this repo>
+  - Choose a repository: *this repo*
   - Environment image: Specify a Docker image
   - Environment type: Linux
   - Custom image type: Other
   - Custom image ID: maxhorstmann/dotnetcore-lambda-ci (fyi, [source](https://github.com/MaxHorstmann/dotnetcore-lambda-ci))
   - Build specification: Use the buildspec.yml in the source code root directory
-  - Artifacts type: <leave empty>
+  - Artifacts type: *leave empty*
   - Service role: Create a service role in your account
   - Role name: codebuild-SE-Alexa-service-role
   - Expand advanced settings, go to Environment variables
