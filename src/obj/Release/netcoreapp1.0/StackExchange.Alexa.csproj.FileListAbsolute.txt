@@ -1,2 +1,0 @@
-c:\code\StackExchange-Alexa\src\bin\Release\netcoreapp1.0\StackExchange.Alexa.deps.json
-c:\code\StackExchange-Alexa\src\obj\Release\netcoreapp1.0\StackExchange.Alexa.AssemblyInfo.cs
