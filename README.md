@@ -17,8 +17,8 @@ Amazon Alexa skill for doing some things on Stack Overflow and the Stack Exchang
 	  - Service role: Create a service role in your account
 	  - Role name: codebuild-SE-Alexa-service-role
 	  - Expand advanced settings, go to Environment variables
-	  - Add environment variable: Name="AWS_ACCESS_KEY_ID", Value="<your access key>"
-	  - Add environment variable: Name="AWS_SECRET_ACCESS_KEY", Value="<your secret>"
+	  - Add environment variable: Name="AWS_ACCESS_KEY_ID", Value="*your access key*"
+	  - Add environment variable: Name="AWS_SECRET_ACCESS_KEY", Value="*your secret*"
 	  - (see [Managing Access Keys for IAM Users](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html))
 3. Kick off a build
 
