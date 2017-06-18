@@ -12,5 +12,6 @@ namespace StackExchange.Alexa
     	{
     		return new { message = "Hello from Lambda!", time = DateTime.UtcNow };
     	}
+    }
     
 }
