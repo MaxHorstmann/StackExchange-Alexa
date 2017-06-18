@@ -7,7 +7,7 @@ Amazon Alexa skill for doing some things on Stack Overflow and the Stack Exchang
 2. Install [AWS CLI](https://aws.amazon.com/cli)
 3. Run `AWS configure` and provide access keys etc.
 4. Run `deploy.bat` (on Windows; port to .sh for Linux/Mac)
-5. Open [Lambda Management Console](https://console.aws.amazon.com/lambda), verify that function "StackExchangeAlexaResponse" has been created
+5. Open [Lambda Management Console](https://console.aws.amazon.com/lambda), verify that function "StackExchangeAlexaResponse" has been created. Add an "Alexa Skills Kit" trigger to the function (TODO permission issue?)
 
 See my earlier blog post [Continuous Integration: C# to AWS Lambda](http://maxhorstmann.net/blog/2017/05/22/ci-dotnetcore-lambda) for setting up continuous integration in AWS CodeBuild.
 
