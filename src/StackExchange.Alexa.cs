@@ -61,8 +61,11 @@ namespace StackExchange.Alexa
                             {
                             	var sb = new StringBuilder();
                             	sb.AppendLine($"There are {inbox.items.Count()} unread items in your inbox.");
+                            	var i = 0;
                             	foreach (var item in inbox.items)
                             	{
+                            		i++;
+                            		sb.AppendLine($"Item {i}.");
                             		sb.AppendLine($"Type: {item.type}.");
                             		sb.AppendLine($"Title: {item.title}.");	
                             		sb.AppendLine($"Body: {item.body}.");
