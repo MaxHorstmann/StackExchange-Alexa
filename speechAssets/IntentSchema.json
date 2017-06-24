@@ -1,10 +1,16 @@
 {
   "intents": [
     {
-      "intent": "StackExchangeIntent"
+      "intent": "InboxIntent"
     },
     {
       "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
     }
   ]
 }
