@@ -16,20 +16,6 @@ using Newtonsoft.Json;
 
 namespace StackExchange.Alexa
 {
-
-	public class Inbox
-	{
-		public IEnumerable<InboxItem> items { get; set; }
-	}
-
-	public class InboxItem
-	{
-		public string item_type { get; set;}
-		public string type => item_type == "chat_message" ? "chat message" : item_type;
-		public string title { get; set;}
-		public string body { get; set;}
-	}
-
     public class Service
     {
     	public async Task<SkillResponse> GetResponse(SkillRequest input, ILambdaContext context)
@@ -133,7 +119,7 @@ namespace StackExchange.Alexa
         private async Task<Inbox> GetInbox(string accessToken)
         {
         	const string key = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
-        	var url = $"/2.2/inbox/unread?access_token={accessToken}&key={key}&filter=withbody";
+        	var url = $"/2.2/inbox?access_token={accessToken}&key={key}&filter=withbody";
 
         	using (var client = new HttpClient())
         	{
