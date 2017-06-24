@@ -15,3 +15,25 @@ See my earlier blog post [Continuous Integration: C# to AWS Lambda](http://maxho
 # Set up Alexa Skill
 
 1. Open [Amazon Developer Console](https://developer.amazon.com) and navigate to "Alexa" section
+2. Go to "Alexa Skills Kit" pane and click "get started"
+3. Click "Add a new Skill"
+4. In the "Skill Information" section, select "Custom Interaction Model" and fill out the other fields
+5. In the "Interaction Model" section, paste [IntentSchema.json](speechAssets/IntentSchema.json) and [SampleUtterances.txt](speechAssets/SampleUtterances.txt)
+6. In the "Configuration" section, paste the ARN (Amazon Resource Name) of the Lambda function. In the "Account Linking" section, set the following values:
+  - Do you allow users to create an account or link to an existing account with you? Yes
+  - Authorization URL: https://stackexchange.com/oauth
+  - Client Id: *get it from [StackApps.com](https://stackapps.com)*
+  - Domain List: stackexchange.com
+  - Scope: create four scopes: "read_inbox", "no_expiry", "write_access", and "private_info"  TODO might not need all 4
+  - Authorization Grant Type: Auth Code Grant
+  - Access Token URI: https://stackexchange.com/oauth/access_token/json
+  - Client Secret: *get it from [StackApps.com](https://stackapps.com)*
+  - Client Authentication Scheme: Credentials in request body
+  - Privacy Policy URL: https://stackexchange.com/legal/privacy-policy
+7. Test & publish it
+
+
+
+
+
+
