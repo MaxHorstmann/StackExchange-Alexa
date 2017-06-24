@@ -23,6 +23,8 @@ namespace StackExchange.Alexa
             var log = context.Logger;
             try
             {
+				var accessToken = input?.Session?.User?.AccessToken;
+
                 SkillResponse response = new SkillResponse();
                 response.Response = new ResponseBody();
                 response.Response.ShouldEndSession = false;
@@ -35,7 +37,7 @@ namespace StackExchange.Alexa
                     log.LogLine($"Default LaunchRequest made: 'Alexa, open Stack Exchange");
                     innerResponse = new PlainTextOutputSpeech()
                     {
-                        Text = "Welcome to Stack Exchange!"
+                        Text = await GetMainMenu(accessToken)
                     };
                 }
                 else if (input.GetRequestType() == typeof(IntentRequest))
@@ -116,10 +118,33 @@ namespace StackExchange.Alexa
             }
         }
 
+        private async Task<string> GetMainMenu(string accessToken)
+        {
+        	var sb = new StringBuilder();
+        	sb.AppendLine("Welcome to Stack Exchange!");
+
+        	if (accessToken != null)
+        	{
+        		var inbox = await GetInbox(accessToken);
+                var newMessages = inbox.items.Count();
+                if (newMessages == 0) 
+                {
+                	sb.AppendLine("You have no new messages.");
+                }
+                else
+                {
+                	sb.AppendLine($"You have {newMessages} new messages.");
+                }
+        	}
+
+        	sb.AppendLine("Please say: inbox, hot question, or help.");
+        	return sb.ToString();
+        }
+
         private async Task<Inbox> GetInbox(string accessToken)
         {
         	const string key = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
-        	var url = $"/2.2/inbox?access_token={accessToken}&key={key}&filter=withbody";
+        	var url = $"/2.2/inbox/unread?access_token={accessToken}&key={key}&filter=withbody";
 
         	using (var client = new HttpClient())
         	{
