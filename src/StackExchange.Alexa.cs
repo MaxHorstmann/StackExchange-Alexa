@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -24,7 +25,9 @@ namespace StackExchange.Alexa
 	public class InboxItem
 	{
 		public string item_type { get; set;}
+		public string type => item_type == "chat_message" ? "chat message" : item_type;
 		public string title { get; set;}
+		public string body { get; set;}
 	}
 
     public class Service
@@ -68,8 +71,15 @@ namespace StackExchange.Alexa
                             }
                             else
                             {
-	                            (innerResponse as PlainTextOutputSpeech).Text = 
-	                            		$"There are {inbox.items.Count()} unread items in your inbox. The title of the first one is {inbox.items.First().title}.";
+                            	var sb = new StringBuilder();
+                            	sb.AppendLine($"There are {inbox.items.Count()} unread items in your inbox.");
+                            	foreach (var item in inbox.items)
+                            	{
+                            		sb.AppendLine($"Type: {item.type}.");
+                            		sb.AppendLine($"Title: {item.title}.");	
+                            		sb.AppendLine($"Body: {item.body}.");
+                            	}
+	                            (innerResponse as PlainTextOutputSpeech).Text = sb.ToString();
                             }
                             break;
                         case "AMAZON.CancelIntent":
@@ -123,7 +133,7 @@ namespace StackExchange.Alexa
         private async Task<Inbox> GetInbox(string accessToken)
         {
         	const string key = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
-        	var url = $"/2.2/inbox/unread?access_token={accessToken}&key={key}";
+        	var url = $"/2.2/inbox/unread?access_token={accessToken}&key={key}&filter=withbody";
 
         	using (var client = new HttpClient())
         	{
