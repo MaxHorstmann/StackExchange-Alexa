@@ -40,8 +40,10 @@ namespace StackExchange.Alexa
                     {
                         case "InboxIntent":
                             log.LogLine($"Inbox intent");
+
+                            var inboxItemCount = GetInboxItemCount();
                             innerResponse = new PlainTextOutputSpeech();
-                            (innerResponse as PlainTextOutputSpeech).Text = "Your inbox is empty.";
+                            (innerResponse as PlainTextOutputSpeech).Text = $"There are {inboxItemCount} items in your inbox.";
                             break;
                         case "AMAZON.CancelIntent":
                             log.LogLine($"AMAZON.CancelIntent: send StopMessage");
@@ -89,6 +91,11 @@ namespace StackExchange.Alexa
                 log.LogLine(JsonConvert.SerializeObject(ex));
                 throw;
             }
+        }
+
+        private int GetInboxItemCount()
+        {
+        	return 5;
         }
 
     }
