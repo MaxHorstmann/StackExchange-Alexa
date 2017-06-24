@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using Amazon.Lambda.Core;
 using Alexa.NET.Request;
 using Alexa.NET.Response;
@@ -10,9 +15,21 @@ using Newtonsoft.Json;
 
 namespace StackExchange.Alexa
 {
+
+	public class Inbox
+	{
+		public IEnumerable<InboxItem> items { get; set; }
+	}
+
+	public class InboxItem
+	{
+		public string item_type { get; set;}
+		public string title { get; set;}
+	}
+
     public class Service
     {
-    	public SkillResponse GetResponse(SkillRequest input, ILambdaContext context)
+    	public async Task<SkillResponse> GetResponse(SkillRequest input, ILambdaContext context)
         {
             var log = context.Logger;
             try
@@ -41,9 +58,19 @@ namespace StackExchange.Alexa
                         case "InboxIntent":
                             log.LogLine($"Inbox intent");
 
-                            var inboxItemCount = GetInboxItemCount();
+                            var inbox = await GetInbox(input.Session.User.AccessToken);
+
                             innerResponse = new PlainTextOutputSpeech();
-                            (innerResponse as PlainTextOutputSpeech).Text = $"There are {inboxItemCount} items in your inbox.";
+
+                            if (inbox.items.Count() == 0)
+                            {
+	                            (innerResponse as PlainTextOutputSpeech).Text = $"There are no unread items in your inbox.";
+                            }
+                            else
+                            {
+	                            (innerResponse as PlainTextOutputSpeech).Text = 
+	                            		$"There are {inbox.items.Count()} unread items in your inbox. The title of the first one is {inbox.items.First().title}.";
+                            }
                             break;
                         case "AMAZON.CancelIntent":
                             log.LogLine($"AMAZON.CancelIntent: send StopMessage");
@@ -93,10 +120,23 @@ namespace StackExchange.Alexa
             }
         }
 
-        private int GetInboxItemCount()
+        private async Task<Inbox> GetInbox(string accessToken)
         {
-        	return 5;
+        	const string key = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
+        	var url = $"/2.2/inbox/unread?access_token={accessToken}&key={key}";
+
+        	using (var client = new HttpClient())
+        	{
+        		client.BaseAddress = new Uri("https://api.stackexchange.com");
+        		var response = await client.GetStringAsync(url);
+        		var inbox = JsonConvert.DeserializeObject<Inbox>(response);
+        		return inbox;
+           	}
         }
+
+
+
+
 
     }
     
