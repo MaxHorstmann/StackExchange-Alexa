@@ -71,21 +71,16 @@ namespace StackExchange.Alexa
                             }
                             break;
                         case "AMAZON.CancelIntent":
-                            log.LogLine($"AMAZON.CancelIntent: send StopMessage");
-                            innerResponse = new PlainTextOutputSpeech();
-                            //(innerResponse as PlainTextOutputSpeech).Text = resource.StopMessage;
-                            response.Response.ShouldEndSession = true;
-                            break;
                         case "AMAZON.StopIntent":
                             log.LogLine($"AMAZON.StopIntent: send StopMessage");
                             innerResponse = new PlainTextOutputSpeech();
-                            //(innerResponse as PlainTextOutputSpeech).Text = resource.StopMessage;
+                            (innerResponse as PlainTextOutputSpeech).Text = "Ok, bye!";
                             response.Response.ShouldEndSession = true;
                             break;
                         case "AMAZON.HelpIntent":
                             log.LogLine($"AMAZON.HelpIntent: send HelpMessage");
                             innerResponse = new PlainTextOutputSpeech();
-                            //(innerResponse as PlainTextOutputSpeech).Text = resource.HelpMessage;
+                            (innerResponse as PlainTextOutputSpeech).Text = HelpText + MainMenuOptions;
                             break;
                         default:
                             log.LogLine($"Unknown intent: " + intentRequest.Intent.Name);
@@ -137,9 +132,11 @@ namespace StackExchange.Alexa
                 }
         	}
 
-        	sb.AppendLine("Please say: inbox, hot question, or help.");
+        	sb.AppendLine(MainMenuOptions);
         	return sb.ToString();
         }
+
+        private string MainMenuOptions => "Please say: inbox, hot question, help, or I'm done.";
 
         private async Task<Inbox> GetInbox(string accessToken)
         {
@@ -155,8 +152,11 @@ namespace StackExchange.Alexa
            	}
         }
 
-
-
+        private string HelpText => @"Stack Exchange is a network of 150+ Q&A communities including Stack Overflow, 
+        		the preeminent site for programmers to find, ask, and answer questions about software development.
+        		To learn more, please go to stackexchange.com or stackoverflow.com. In order to check your
+        		inbox and cast upvotes and downvotes, you need to open the Amazon Alexa app on your mobile device
+        		and set up account linking.";
 
 
     }

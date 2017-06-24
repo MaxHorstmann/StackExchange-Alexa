@@ -1,3 +1,13 @@
-StackExchangeIntent sites
-StackExchangeIntent list all sites
-StackExchangeIntent all sites
+InboxIntent inbox
+InboxIntent check my inbox
+InboxIntent anything in my inbox
+InboxIntent open inbox
+AMAZON.HelpIntent help
+AMAZON.HelpIntent get help
+AMAZON.HelpIntent help me
+AMAZON.HelpIntent what
+AMAZON.StopIntent exit
+AMAZON.StopIntent I'm done
+AMAZON.StopIntent done
+AMAZON.StopIntent quit
+AMAZON.StopIntent that is enough
