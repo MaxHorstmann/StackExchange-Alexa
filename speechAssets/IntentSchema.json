@@ -4,6 +4,9 @@
       "intent": "InboxIntent"
     },
     {
+      "intent": "HotQuestionIntent"
+    },    
+    {
       "intent": "AMAZON.HelpIntent"
     },
     {

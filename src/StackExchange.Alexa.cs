@@ -70,6 +70,13 @@ namespace StackExchange.Alexa
 	                            (innerResponse as PlainTextOutputSpeech).Text = sb.ToString();
                             }
                             break;
+                        case "HotQuestionIntent":
+                            log.LogLine($"HotQuestion intent");
+                            innerResponse = new PlainTextOutputSpeech() 
+                            {
+                            	Text = "Support for hot questions is coming soon!"
+                            };
+                            break;
                         case "AMAZON.CancelIntent":
                         case "AMAZON.StopIntent":
                             log.LogLine($"AMAZON.StopIntent: send StopMessage");
@@ -156,7 +163,7 @@ namespace StackExchange.Alexa
         		the preeminent site for programmers to find, ask, and answer questions about software development.
         		To learn more, please go to stackexchange.com or stackoverflow.com. In order to check your
         		inbox and cast upvotes and downvotes, you need to open the Amazon Alexa app on your mobile device
-        		and set up account linking.";
+        		and set up account linking. ";
 
 
     }

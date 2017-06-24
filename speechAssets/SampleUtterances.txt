@@ -2,6 +2,12 @@ InboxIntent inbox
 InboxIntent check my inbox
 InboxIntent anything in my inbox
 InboxIntent open inbox
+HotQuestionIntent hot question
+HotQuestionIntent hot questions
+HotQuestionIntent questions
+HotQuestionIntent hot
+HotQuestionIntent browse hot questions
+HotQuestionIntent browse questions
 AMAZON.HelpIntent help
 AMAZON.HelpIntent get help
 AMAZON.HelpIntent help me
