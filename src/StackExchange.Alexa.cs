@@ -51,11 +51,12 @@ namespace StackExchange.Alexa
 
                             var inbox = await GetInbox(input.Session.User.AccessToken);
 
-                            innerResponse = new PlainTextOutputSpeech();
-
                             if (inbox.items.Count() == 0)
                             {
-	                            (innerResponse as PlainTextOutputSpeech).Text = $"There are no unread items in your inbox.";
+	                            innerResponse = new PlainTextOutputSpeech()
+	                            {
+	                            	Text = "There are no unread items in your inbox."
+	                            };
                             }
                             else
                             {
@@ -70,7 +71,10 @@ namespace StackExchange.Alexa
                             		sb.AppendLine($"Title: {item.title}.");	
                             		sb.AppendLine($"Body: {item.body}.");
                             	}
-	                            (innerResponse as PlainTextOutputSpeech).Text = sb.ToString();
+                            	innerResponse = new PlainTextOutputSpeech()
+	                            {
+	                            	Text = sb.ToString()
+	                            };
                             }
                             break;
                         case "HotQuestionIntent":
@@ -134,11 +138,11 @@ namespace StackExchange.Alexa
                 var newMessages = inbox.items.Count();
                 if (newMessages == 0) 
                 {
-                	sb.AppendLine("You have no new messages.");
+                	sb.AppendLine("You have no unread messages.");
                 }
                 else
                 {
-                	sb.AppendLine($"You have {newMessages} new messages.");
+                	sb.AppendLine($"You have {newMessages} unread messages.");
                 }
         	}
 

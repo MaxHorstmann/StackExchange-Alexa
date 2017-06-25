@@ -2,6 +2,9 @@ InboxIntent inbox
 InboxIntent check my inbox
 InboxIntent anything in my inbox
 InboxIntent open inbox
+InboxIntent messages
+InboxIntent check messages
+InboxIntent check my messages
 HotQuestionIntent hot question
 HotQuestionIntent hot questions
 HotQuestionIntent questions
