@@ -61,19 +61,23 @@ namespace StackExchange.Alexa
                             else
                             {
                             	var sb = new StringBuilder();
-                            	sb.AppendLine($"There are {inbox.items.Count()} unread items in your inbox.");
+                            	sb.Append("<speak>");
+                            	sb.AppendLine($"<p>There are {inbox.items.Count()} unread items in your inbox.</p>");
                             	var i = 0;
                             	foreach (var item in inbox.items)
                             	{
                             		i++;
-                            		sb.AppendLine($"Item {i}.");
+                            		sb.Append("<p>");
+                            		sb.AppendLine($"<s><say-as interpret-as=\"ordinal\">{i}</say-as> message</s>");
                             		sb.AppendLine($"Type: {item.type}.");
                             		sb.AppendLine($"Title: {item.title}.");	
                             		sb.AppendLine($"Body: {item.body}.");
+                            		sb.Append("</p><p></p><p></p>");
                             	}
-                            	innerResponse = new PlainTextOutputSpeech()
+                            	sb.Append("</speak>");
+                            	innerResponse = new SsmlOutputSpeech()
 	                            {
-	                            	Text = sb.ToString()
+	                            	Ssml = sb.ToString()
 	                            };
                             }
                             break;
@@ -155,7 +159,7 @@ namespace StackExchange.Alexa
         private async Task<Inbox> GetInbox(string accessToken)
         {
         	const string key = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
-        	var url = $"/2.2/inbox/unread?access_token={accessToken}&key={key}&filter=withbody";
+        	var url = $"/2.2/inbox?access_token={accessToken}&key={key}&filter=withbody";
 
         	using (var client = new HttpClient())
         	{
