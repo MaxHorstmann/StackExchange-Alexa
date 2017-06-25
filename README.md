@@ -24,13 +24,22 @@ See my earlier blog post [Continuous Integration: C# to AWS Lambda](http://maxho
   - Authorization URL: https://stackexchange.com/oauth
   - Client Id: *get it from [StackApps.com](https://stackapps.com)*
   - Domain List: stackexchange.com
-  - Scope: create four scopes: "read_inbox", "no_expiry", "write_access", and "private_info"  TODO might not need all 4
+  - Scope: add the following scopes: "read_inbox", "no_expiry", "write_access"
   - Authorization Grant Type: Auth Code Grant
   - Access Token URI: https://stackexchange.com/oauth/access_token/json
   - Client Secret: *get it from [StackApps.com](https://stackapps.com)*
   - Client Authentication Scheme: Credentials in request body
   - Privacy Policy URL: https://stackexchange.com/legal/privacy-policy
 7. Test & publish it
+
+On mobile device, go to https://stackexchange.com/users/login and log in or sign up to Stack Exchange. 
+
+Open Amazon Alexa app and enable account linking for this skill.
+
+Say "Alexa, open Stack Exchange" and take it from there. 
+
+To test the "messages" feature, you'll need something in your inbox. Go to  https://chat.stackexchange.com/rooms/1/sandbox (one of the Stack Exchange chat rooms), and say "can someone please reply to me?". Once someone replies, the response will get pushed to your inbox.
+
 
 
 
