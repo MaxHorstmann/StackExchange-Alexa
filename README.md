@@ -1,4 +1,4 @@
-# StackExchange-Alexa
+# Stack Exchange Alexa
 
 Amazon Alexa skill for [Stack Exchange](https://stackexchange.com) / [Stack Overflow](https://stackoverflow.com). 
 
