@@ -2,7 +2,7 @@
 
 Amazon Alexa skill for [Stack Exchange](https://stackexchange.com) / [Stack Overflow](https://stackoverflow.com). 
 
-Check your inbox and browse hot questions using voice commands!
+Check your inbox and browse hot questions using voice commands! (Requires [account linking](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/linking-an-alexa-user-with-a-user-in-your-system))
 
 Sample dialog:
 
@@ -14,8 +14,6 @@ Sample dialog:
 "Hot questions!" - "Please say: technology, business, or life!"
 
 "Business!" - "Here's a hot question from 'The Workplace': 'As a developer, what can I do about bad/lack of requirements from the product owner?' Want to hear more?"
-
-Requires [account linking](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/linking-an-alexa-user-with-a-user-in-your-system).
 
 # Enable Skill on my Echo
 
