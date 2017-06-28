@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
 using System.Net;
@@ -10,6 +10,7 @@ using Alexa.NET.Request;
 using Alexa.NET.Response;
 using Alexa.NET.Request.Type;
 using Newtonsoft.Json;
+using StackExchange.API;
 
 
 [assembly: LambdaSerializerAttribute(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -55,7 +56,7 @@ namespace StackExchange.Alexa
         {
 			var sb = new StringBuilder();
 	       	sb.Append("<speak>");
-	        var inbox = await GetInbox(accessToken);
+	        var inbox = await Client.GetInbox(accessToken);
 	        if (inbox.items.Count() == 0)
 	        {
 	        	sb.AppendLine("<p>There are no unread items in your inbox.</p>");
@@ -81,6 +82,11 @@ namespace StackExchange.Alexa
 
         private async Task<SkillResponse> GetHotQuestionIntentResponse(string accessToken)
         {
+        	//var site = "scifi"; // TODO randomize
+
+        	// https://api.stackexchange.com/2.2/questions?order=desc&sort=hot&site=scifi&pagesize=3
+
+
         	return CreatePlainTextResponse("Coming soon!");
         }
 
@@ -129,7 +135,7 @@ namespace StackExchange.Alexa
 
         	if (accessToken != null)
         	{
-        		var inbox = await GetInbox(accessToken);
+        		var inbox = await Client.GetInbox(accessToken);
                 var newMessages = inbox.items.Count();
                 if (newMessages == 0) 
                 {
@@ -143,20 +149,6 @@ namespace StackExchange.Alexa
 
         	sb.AppendLine(MainMenuOptions);
         	return sb.ToString();
-        }
-
-        private async Task<Inbox> GetInbox(string accessToken)
-        {
-        	const string key = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
-        	var url = $"/2.2/inbox?access_token={accessToken}&key={key}&filter=withbody";
-
-        	using (var client = new HttpClient())
-        	{
-        		client.BaseAddress = new Uri("https://api.stackexchange.com");
-        		var response = await client.GetStringAsync(url);
-        		var inbox = JsonConvert.DeserializeObject<Inbox>(response);
-        		return inbox;
-           	}
         }
 
 
