@@ -127,9 +127,9 @@ namespace StackExchange.Alexa
         	return sb.ToString();
         }
 
-        private const string WelcomeText = "Welcome to Stack Exchange!";
+        private const string WelcomeText = "<p>Welcome to Stack Exchange!</p>";
 
-        private const string MainMenuOptions = "Please say: inbox, hot question, help, or I'm done.";
+        private const string MainMenuOptions = "<p>Please say: inbox, hot question, help, or I'm done.</p>";
 
         private const string HelpText = @"Stack Exchange is a network of 150+ Q&A communities including Stack Overflow, 
         		the preeminent site for programmers to find, ask, and answer questions about software development.
