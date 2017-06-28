@@ -116,11 +116,11 @@ namespace StackExchange.Alexa
             var newMessages = inbox.items.Count();
             if (newMessages == 0) 
             {
-            	sb.AppendLine("You have no unread messages.");
+            	sb.AppendLine("<p>You have no unread messages.</p>");
             }
             else
             {
-            	sb.AppendLine($"You have {newMessages} unread messages.");
+            	sb.AppendLine($"<p>You have {newMessages} unread messages.</p>");
             }
 
         	sb.AppendLine(MainMenuOptions);
@@ -131,11 +131,11 @@ namespace StackExchange.Alexa
 
         private const string MainMenuOptions = "<p>Please say: inbox, hot question, help, or I'm done.</p>";
 
-        private const string HelpText = @"Stack Exchange is a network of 150+ Q&A communities including Stack Overflow, 
+        private const string HelpText = @"<p>Stack Exchange is a network of 150+ Q&A communities including Stack Overflow, 
         		the preeminent site for programmers to find, ask, and answer questions about software development.
         		To learn more, please go to stackexchange.com or stackoverflow.com. In order to check your
         		inbox and cast upvotes and downvotes, you need to open the Amazon Alexa app on your mobile device
-        		and set up account linking. ";
+        		and set up account linking. </p>";
 
 
     }
