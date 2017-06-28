@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace StackExchange.Alexa
+namespace StackExchange.API
 {
 
 	public class Inbox
