@@ -84,20 +84,28 @@ namespace StackExchange.Alexa
         	var site = "scifi"; // TODO randomize
         	var questions = await _client.GetHotQuestions(site, 1);
         	var question = questions.items.First();   // TODO pick random from top 5 or so
-        	return CreateResponse(question.title);
+
+        	var sb = new StringBuilder();
+
+        	sb.Append($"<p>Here's a hot question from {site}:</p>");
+        	sb.Append($"<p>{question.title}</p>");
+        	sb.Append($"<p>Say: more details, next question, or I'm done.</p>");
+
+        	var sessionAttributes = new Dictionary<string, object>();
+        	sessionAttributes.Add("question_id", question.question_id);
+
+        	return CreateResponse(sb.ToString(), false, sessionAttributes);
         }
 
-        private SkillResponse CreateResponse(string ssml, bool shouldEndSession = false)
+        private SkillResponse CreateResponse(
+        		string ssml, 
+        		bool shouldEndSession = false, 
+        		Dictionary<string, object> sessionAttributes = null)
         {
-            // if (response.SessionAttributes == null)
-            // {
-            //     response.SessionAttributes = new System.Collections.Generic.Dictionary<string, object>();
-            // }
-            // response.SessionAttributes.Add("foo", count++);
-
         	return new SkillResponse()
         	{
     			Version = "1.0",
+    			SessionAttributes = sessionAttributes,
         		Response = new ResponseBody()
         		{
         			ShouldEndSession = shouldEndSession,

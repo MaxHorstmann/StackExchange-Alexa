@@ -49,7 +49,9 @@ namespace StackExchange.API
 
 	public class Question
 	{
+		public int question_id {get; set;}
 		public string title {get; set;}
+		public IEnumerable<string> tags {get; set;}
 	}
 
 	public class Inbox
