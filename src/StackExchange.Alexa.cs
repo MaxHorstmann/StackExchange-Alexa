@@ -18,117 +18,108 @@ namespace StackExchange.Alexa
 {
     public class Service
     {
+    	// Main entry point
     	public async Task<SkillResponse> GetResponse(SkillRequest input, ILambdaContext context)
         {
-            var log = context.Logger;
             try
             {
 				var accessToken = input?.Session?.User?.AccessToken;
-
-                SkillResponse response = new SkillResponse();
-                response.Response = new ResponseBody();
-                response.Response.ShouldEndSession = false;
-                IOutputSpeech innerResponse = null;
-                log.LogLine($"Skill Request Object:");
-                log.LogLine(JsonConvert.SerializeObject(input));
-
-                if (input.GetRequestType() == typeof(LaunchRequest))
+                if (input.GetRequestType() == typeof(LaunchRequest)) return await GetLaunchRequestResponse(accessToken);
+                if (input.GetRequestType() == typeof(IntentRequest))
                 {
-                    log.LogLine($"Default LaunchRequest made: 'Alexa, open Stack Exchange");
-                    innerResponse = new PlainTextOutputSpeech()
-                    {
-                        Text = await GetMainMenu(accessToken)
-                    };
+                	var intentRequest = (IntentRequest)input.Request;
+                	if (intentRequest.Intent.Name=="InboxIntent") return await GetInboxIntentResponse(accessToken);
+                	if (intentRequest.Intent.Name=="HotQuestionIntent") return await GetHotQuestionIntentResponse(accessToken);
+                	if (intentRequest.Intent.Name=="AMAZON.HelpIntent") return CreatePlainTextResponse(HelpText + MainMenuOptions);
+                	if (intentRequest.Intent.Name=="AMAZON.CancelIntent") return await GetLaunchRequestResponse(accessToken);
+                	if (intentRequest.Intent.Name=="AMAZON.StopIntent") return CreatePlainTextResponse("Ok, bye!", true);
                 }
-                else if (input.GetRequestType() == typeof(IntentRequest))
-                {
-                    var intentRequest = (IntentRequest)input.Request;
-
-                    switch (intentRequest.Intent.Name)
-                    {
-                        case "InboxIntent":
-                            log.LogLine($"Inbox intent");
-
-                            var inbox = await GetInbox(input.Session.User.AccessToken);
-
-                            if (inbox.items.Count() == 0)
-                            {
-	                            innerResponse = new PlainTextOutputSpeech()
-	                            {
-	                            	Text = "There are no unread items in your inbox."
-	                            };
-                            }
-                            else
-                            {
-                            	var sb = new StringBuilder();
-                            	sb.Append("<speak>");
-                            	sb.AppendLine($"<p>There are {inbox.items.Count()} unread items in your inbox.</p>");
-                            	var i = 0;
-                            	foreach (var item in inbox.items)
-                            	{
-                            		i++;
-                            		sb.Append("<p>");
-                            		sb.AppendLine($"<s><say-as interpret-as=\"ordinal\">{i}</say-as> message</s>");
-                            		sb.AppendLine($"Type: {item.type}.");
-                            		sb.AppendLine($"Title: {item.title}.");	
-                            		sb.AppendLine($"Body: {item.body}.");
-                            		sb.Append("</p><p></p><p></p>");
-                            	}
-                            	sb.Append("</speak>");
-                            	innerResponse = new SsmlOutputSpeech()
-	                            {
-	                            	Ssml = sb.ToString()
-	                            };
-                            }
-                            break;
-                        case "HotQuestionIntent":
-                            log.LogLine($"HotQuestion intent");
-                            innerResponse = new PlainTextOutputSpeech() 
-                            {
-                            	Text = "Support for hot questions is coming soon!"
-                            };
-                            break;
-                        case "AMAZON.CancelIntent":
-                        case "AMAZON.StopIntent":
-                            log.LogLine($"AMAZON.StopIntent: send StopMessage");
-                            innerResponse = new PlainTextOutputSpeech();
-                            (innerResponse as PlainTextOutputSpeech).Text = "Ok, bye!";
-                            response.Response.ShouldEndSession = true;
-                            break;
-                        case "AMAZON.HelpIntent":
-                            log.LogLine($"AMAZON.HelpIntent: send HelpMessage");
-                            innerResponse = new PlainTextOutputSpeech();
-                            (innerResponse as PlainTextOutputSpeech).Text = HelpText + MainMenuOptions;
-                            break;
-                        default:
-                            log.LogLine($"Unknown intent: " + intentRequest.Intent.Name);
-                            innerResponse = new PlainTextOutputSpeech();
-                            //(innerResponse as PlainTextOutputSpeech).Text = resource.HelpReprompt;
-                            break;
-                    }
-                }
-
-                response.Response.OutputSpeech = innerResponse;
-                response.Version = "1.0";
-
-                if (response.SessionAttributes == null)
-                {
-                    response.SessionAttributes = new System.Collections.Generic.Dictionary<string, object>();
-                }
-                //response.SessionAttributes.Add("foo", count++);
-
-                log.LogLine($"Skill Response Object...");
-                log.LogLine(JsonConvert.SerializeObject(response));
-                return response;
-
+                return CreatePlainTextResponse("Sorry, not sure what you're saying.");
             }
             catch (Exception ex)
             {
+	            var log = context.Logger;
                 log.LogLine("Unhandled exception:");
                 log.LogLine(ex.ToString());
                 log.LogLine(JsonConvert.SerializeObject(ex));
                 throw;
             }
+        }
+
+        private async Task<SkillResponse> GetLaunchRequestResponse(string accessToken)
+        {
+        	return CreatePlainTextResponse(await GetMainMenu(accessToken));
+        }
+
+        private async Task<SkillResponse> GetInboxIntentResponse(string accessToken)
+        {
+			var sb = new StringBuilder();
+	       	sb.Append("<speak>");
+	        var inbox = await GetInbox(accessToken);
+	        if (inbox.items.Count() == 0)
+	        {
+	        	sb.AppendLine("<p>There are no unread items in your inbox.</p>");
+	        }
+	        else
+	        {
+	        	sb.AppendLine($"<p>There are {inbox.items.Count()} unread items in your inbox.</p>");
+	        	var i = 0;
+	        	foreach (var item in inbox.items)
+	        	{
+	        		i++;
+	        		sb.Append("<p>");
+	        		sb.AppendLine($"<s><say-as interpret-as=\"ordinal\">{i}</say-as> message</s>");
+	        		sb.AppendLine($"Type: {item.type}.");
+	        		sb.AppendLine($"Title: {item.title}.");	
+	        		sb.AppendLine($"Body: {item.body}.");
+	        		sb.Append("</p><p></p><p></p>");
+	        	}
+	        }
+        	sb.Append("</speak>");
+        	return CreateSsmlResponse(sb.ToString());
+        }
+
+        private async Task<SkillResponse> GetHotQuestionIntentResponse(string accessToken)
+        {
+        	return CreatePlainTextResponse("Coming soon!");
+        }
+
+        private SkillResponse CreatePlainTextResponse(string text, bool shouldEndSession = false)
+        {
+            // if (response.SessionAttributes == null)
+            // {
+            //     response.SessionAttributes = new System.Collections.Generic.Dictionary<string, object>();
+            // }
+            // response.SessionAttributes.Add("foo", count++);
+
+        	return new SkillResponse()
+        	{
+    			Version = "1.0",
+        		Response = new ResponseBody()
+        		{
+        			ShouldEndSession = shouldEndSession,
+        			OutputSpeech = new PlainTextOutputSpeech()
+		            {
+		                Text = text
+		            }
+        		}
+        	};
+        }
+
+        private SkillResponse CreateSsmlResponse(string ssml, bool shouldEndSession = false)
+        {
+        	return new SkillResponse()
+        	{
+    			Version = "1.0",
+        		Response = new ResponseBody()
+        		{
+        			ShouldEndSession = shouldEndSession,
+        			OutputSpeech = new SsmlOutputSpeech()
+		            {
+		            	Ssml = ssml
+		            }
+        		}
+        	};
         }
 
         private async Task<string> GetMainMenu(string accessToken)
@@ -154,8 +145,6 @@ namespace StackExchange.Alexa
         	return sb.ToString();
         }
 
-        private string MainMenuOptions => "Please say: inbox, hot question, help, or I'm done.";
-
         private async Task<Inbox> GetInbox(string accessToken)
         {
         	const string key = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
@@ -169,6 +158,9 @@ namespace StackExchange.Alexa
         		return inbox;
            	}
         }
+
+
+        private string MainMenuOptions => "Please say: inbox, hot question, help, or I'm done.";
 
         private string HelpText => @"Stack Exchange is a network of 150+ Q&A communities including Stack Overflow, 
         		the preeminent site for programmers to find, ask, and answer questions about software development.
