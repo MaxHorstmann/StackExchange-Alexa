@@ -32,6 +32,9 @@ namespace StackExchange.Alexa
                 	var intentRequest = (IntentRequest)input.Request;
                 	if (intentRequest.Intent.Name=="InboxIntent") return await GetInboxIntentResponse();
                 	if (intentRequest.Intent.Name=="HotQuestionIntent") return await GetHotQuestionIntentResponse();
+                	if (intentRequest.Intent.Name=="HotQuestionDetailsIntent") 
+                			return await GetHotQuestionDetailsIntentResponse
+                				((string)input.Session.Attributes["site"], (int)input.Session.Attributes["question_id"]);
                 	if (intentRequest.Intent.Name=="AMAZON.HelpIntent") return CreateResponse(HelpText + MainMenuOptions);
                 	if (intentRequest.Intent.Name=="AMAZON.CancelIntent") return await GetLaunchRequestResponse();
                 	if (intentRequest.Intent.Name=="AMAZON.StopIntent") return CreateResponse("Ok, bye!", true);
@@ -92,9 +95,18 @@ namespace StackExchange.Alexa
         	sb.Append($"<p>Say: more details, next question, or I'm done.</p>");
 
         	var sessionAttributes = new Dictionary<string, object>();
+        	sessionAttributes.Add("site", site);
         	sessionAttributes.Add("question_id", question.question_id);
-
         	return CreateResponse(sb.ToString(), false, sessionAttributes);
+        }
+
+        private async Task<SkillResponse> GetHotQuestionDetailsIntentResponse(string site, int question_id)
+        {
+        	var question = await _client.GetQuestionDetails(site, question_id);
+        	var sessionAttributes = new Dictionary<string, object>();
+        	sessionAttributes.Add("site", site);
+        	sessionAttributes.Add("question_id", question.question_id);
+        	return CreateResponse(question.body, false, sessionAttributes);
         }
 
         private SkillResponse CreateResponse(

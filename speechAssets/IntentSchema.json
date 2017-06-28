@@ -5,7 +5,16 @@
     },
     {
       "intent": "HotQuestionIntent"
-    },    
+    },
+    {
+      "intent": "HotQuestionDetailsIntent"
+    },
+    {
+      "intent": "UpvoteIntent"
+    },
+    {
+      "intent": "DownvoteIntent"
+    },
     {
       "intent": "AMAZON.HelpIntent"
     },

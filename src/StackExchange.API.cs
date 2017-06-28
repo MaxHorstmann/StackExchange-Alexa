@@ -30,6 +30,11 @@ namespace StackExchange.API
     			$"&order=desc&sort=hot&pagesize={count}&site={site}"));
         }
 
+        public async Task<Question> GetQuestionDetails(string site, int question_id)
+        {
+    		return JsonConvert.DeserializeObject<Question>(await GetApiResponse($"question/{question_id}", $"&site={site}&filter=withbody"));
+        }
+
         private async Task<string> GetApiResponse(string route, string parameters)
         {
         	var url = $"/2.2/{route}?access_token={AccessToken}&key={Key}{parameters}";
@@ -51,6 +56,7 @@ namespace StackExchange.API
 	{
 		public int question_id {get; set;}
 		public string title {get; set;}
+		public string body { get; set;}
 		public IEnumerable<string> tags {get; set;}
 	}
 

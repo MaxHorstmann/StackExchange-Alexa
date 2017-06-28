@@ -11,6 +11,13 @@ HotQuestionIntent questions
 HotQuestionIntent hot
 HotQuestionIntent browse hot questions
 HotQuestionIntent browse questions
+HotQuestionDetailsIntent more details
+HotQuestionDetailsIntent question details
+HotQuestionDetailsIntent tell me more
+UpvoteIntent upvote
+UpvoteIntent cast an upvote
+DownvoteIntent downvote
+DownvoteIntent cast a downvote
 AMAZON.HelpIntent help
 AMAZON.HelpIntent get help
 AMAZON.HelpIntent help me
