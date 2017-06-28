@@ -32,11 +32,11 @@ namespace StackExchange.Alexa
                 	var intentRequest = (IntentRequest)input.Request;
                 	if (intentRequest.Intent.Name=="InboxIntent") return await GetInboxIntentResponse();
                 	if (intentRequest.Intent.Name=="HotQuestionIntent") return await GetHotQuestionIntentResponse();
-                	if (intentRequest.Intent.Name=="AMAZON.HelpIntent") return CreatePlainTextResponse(HelpText + MainMenuOptions);
+                	if (intentRequest.Intent.Name=="AMAZON.HelpIntent") return CreateResponse(HelpText + MainMenuOptions);
                 	if (intentRequest.Intent.Name=="AMAZON.CancelIntent") return await GetLaunchRequestResponse();
-                	if (intentRequest.Intent.Name=="AMAZON.StopIntent") return CreatePlainTextResponse("Ok, bye!", true);
+                	if (intentRequest.Intent.Name=="AMAZON.StopIntent") return CreateResponse("Ok, bye!", true);
                 }
-                return CreatePlainTextResponse("Sorry, not sure what you're saying.");
+                return CreateResponse("Sorry, not sure what you're saying.");
             }
             catch (Exception ex)
             {
@@ -50,7 +50,7 @@ namespace StackExchange.Alexa
 
         private async Task<SkillResponse> GetLaunchRequestResponse()
         {
-        	return CreatePlainTextResponse(await GetMainMenu());
+        	return CreateResponse(WelcomeText + await GetMainMenu());
         }
 
         private async Task<SkillResponse> GetInboxIntentResponse()
@@ -76,7 +76,7 @@ namespace StackExchange.Alexa
 	        		sb.Append("</p><p></p><p></p>");
 	        	}
 	        }
-        	return CreateSsmlResponse(sb.ToString());
+        	return CreateResponse(sb.ToString());
         }
 
         private async Task<SkillResponse> GetHotQuestionIntentResponse()
@@ -84,10 +84,10 @@ namespace StackExchange.Alexa
         	var site = "scifi"; // TODO randomize
         	var questions = await _client.GetHotQuestions(site, 1);
         	var question = questions.items.First();   // TODO pick random from top 5 or so
-        	return CreateSsmlResponse(question.title);
+        	return CreateResponse(question.title);
         }
 
-        private SkillResponse CreatePlainTextResponse(string text, bool shouldEndSession = false)
+        private SkillResponse CreateResponse(string ssml, bool shouldEndSession = false)
         {
             // if (response.SessionAttributes == null)
             // {
@@ -95,22 +95,6 @@ namespace StackExchange.Alexa
             // }
             // response.SessionAttributes.Add("foo", count++);
 
-        	return new SkillResponse()
-        	{
-    			Version = "1.0",
-        		Response = new ResponseBody()
-        		{
-        			ShouldEndSession = shouldEndSession,
-        			OutputSpeech = new PlainTextOutputSpeech()
-		            {
-		                Text = text
-		            }
-        		}
-        	};
-        }
-
-        private SkillResponse CreateSsmlResponse(string ssml, bool shouldEndSession = false)
-        {
         	return new SkillResponse()
         	{
     			Version = "1.0",
@@ -128,8 +112,6 @@ namespace StackExchange.Alexa
         private async Task<string> GetMainMenu()
         {
         	var sb = new StringBuilder();
-        	sb.AppendLine("Welcome to Stack Exchange!");
-
     		var inbox = await _client.GetInbox();
             var newMessages = inbox.items.Count();
             if (newMessages == 0) 
@@ -145,10 +127,11 @@ namespace StackExchange.Alexa
         	return sb.ToString();
         }
 
+        private const string WelcomeText = "Welcome to Stack Exchange!";
 
-        private string MainMenuOptions => "Please say: inbox, hot question, help, or I'm done.";
+        private const string MainMenuOptions = "Please say: inbox, hot question, help, or I'm done.";
 
-        private string HelpText => @"Stack Exchange is a network of 150+ Q&A communities including Stack Overflow, 
+        private const string HelpText = @"Stack Exchange is a network of 150+ Q&A communities including Stack Overflow, 
         		the preeminent site for programmers to find, ask, and answer questions about software development.
         		To learn more, please go to stackexchange.com or stackoverflow.com. In order to check your
         		inbox and cast upvotes and downvotes, you need to open the Amazon Alexa app on your mobile device
