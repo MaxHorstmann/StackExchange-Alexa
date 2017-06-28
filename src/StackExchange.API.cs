@@ -10,19 +10,46 @@ namespace StackExchange.API
 {
 	public class Client
 	{
-        public static async Task<Inbox> GetInbox(string accessToken)
-        {
-        	const string key = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
-        	var url = $"/2.2/inbox?access_token={accessToken}&key={key}&filter=withbody";
+      	const string Key = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
+      	const string ApiBaseAddress = "https://api.stackexchange.com";
 
-        	using (var client = new HttpClient())
+      	private readonly string AccessToken;
+      	public Client(string accessToken)
+      	{
+      		AccessToken = accessToken;
+      	}
+
+        public async Task<Inbox> GetInbox()
+        {
+    		return JsonConvert.DeserializeObject<Inbox>(await GetApiResponse("inbox","&filter=withbody"));
+        }
+
+        public async Task<Questions> GetHotQuestions(string site, int count)
+        {
+    		return JsonConvert.DeserializeObject<Questions>(await GetApiResponse("questions", 
+    			$"&order=desc&sort=hot&pagesize={count}&site={site}"));
+        }
+
+        private async Task<string> GetApiResponse(string route, string parameters)
+        {
+        	var url = $"/2.2/{route}?access_token={AccessToken}&key={Key}{parameters}";
+        	using (var httpClient = new HttpClient())
         	{
-        		client.BaseAddress = new Uri("https://api.stackexchange.com");
-        		var response = await client.GetStringAsync(url);
-        		var inbox = JsonConvert.DeserializeObject<Inbox>(response);
-        		return inbox;
+        		httpClient.BaseAddress = new Uri(ApiBaseAddress);
+        		return await httpClient.GetStringAsync(url);
            	}
         }
+
+	}
+
+	public class Questions
+	{
+		public IEnumerable<Question> items {get; set;}
+	}
+
+	public class Question
+	{
+		public string title {get; set;}
 	}
 
 	public class Inbox

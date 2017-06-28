@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using System.Text;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Amazon.Lambda.Core;
@@ -19,20 +17,23 @@ namespace StackExchange.Alexa
 {
     public class Service
     {
+    	private Client _client;
+
     	// Main entry point
     	public async Task<SkillResponse> GetResponse(SkillRequest input, ILambdaContext context)
         {
             try
             {
-				var accessToken = input?.Session?.User?.AccessToken;
-                if (input.GetRequestType() == typeof(LaunchRequest)) return await GetLaunchRequestResponse(accessToken);
+				_client = new Client(input?.Session?.User?.AccessToken);
+
+                if (input.GetRequestType() == typeof(LaunchRequest)) return await GetLaunchRequestResponse();
                 if (input.GetRequestType() == typeof(IntentRequest))
                 {
                 	var intentRequest = (IntentRequest)input.Request;
-                	if (intentRequest.Intent.Name=="InboxIntent") return await GetInboxIntentResponse(accessToken);
-                	if (intentRequest.Intent.Name=="HotQuestionIntent") return await GetHotQuestionIntentResponse(accessToken);
+                	if (intentRequest.Intent.Name=="InboxIntent") return await GetInboxIntentResponse();
+                	if (intentRequest.Intent.Name=="HotQuestionIntent") return await GetHotQuestionIntentResponse();
                 	if (intentRequest.Intent.Name=="AMAZON.HelpIntent") return CreatePlainTextResponse(HelpText + MainMenuOptions);
-                	if (intentRequest.Intent.Name=="AMAZON.CancelIntent") return await GetLaunchRequestResponse(accessToken);
+                	if (intentRequest.Intent.Name=="AMAZON.CancelIntent") return await GetLaunchRequestResponse();
                 	if (intentRequest.Intent.Name=="AMAZON.StopIntent") return CreatePlainTextResponse("Ok, bye!", true);
                 }
                 return CreatePlainTextResponse("Sorry, not sure what you're saying.");
@@ -47,16 +48,15 @@ namespace StackExchange.Alexa
             }
         }
 
-        private async Task<SkillResponse> GetLaunchRequestResponse(string accessToken)
+        private async Task<SkillResponse> GetLaunchRequestResponse()
         {
-        	return CreatePlainTextResponse(await GetMainMenu(accessToken));
+        	return CreatePlainTextResponse(await GetMainMenu());
         }
 
-        private async Task<SkillResponse> GetInboxIntentResponse(string accessToken)
+        private async Task<SkillResponse> GetInboxIntentResponse()
         {
 			var sb = new StringBuilder();
-	       	sb.Append("<speak>");
-	        var inbox = await Client.GetInbox(accessToken);
+	        var inbox = await _client.GetInbox();
 	        if (inbox.items.Count() == 0)
 	        {
 	        	sb.AppendLine("<p>There are no unread items in your inbox.</p>");
@@ -76,18 +76,15 @@ namespace StackExchange.Alexa
 	        		sb.Append("</p><p></p><p></p>");
 	        	}
 	        }
-        	sb.Append("</speak>");
         	return CreateSsmlResponse(sb.ToString());
         }
 
-        private async Task<SkillResponse> GetHotQuestionIntentResponse(string accessToken)
+        private async Task<SkillResponse> GetHotQuestionIntentResponse()
         {
-        	//var site = "scifi"; // TODO randomize
-
-        	// https://api.stackexchange.com/2.2/questions?order=desc&sort=hot&site=scifi&pagesize=3
-
-
-        	return CreatePlainTextResponse("Coming soon!");
+        	var site = "scifi"; // TODO randomize
+        	var questions = await _client.GetHotQuestions(site, 1);
+        	var question = questions.items.First();   // TODO pick random from top 5 or so
+        	return CreateSsmlResponse(question.title);
         }
 
         private SkillResponse CreatePlainTextResponse(string text, bool shouldEndSession = false)
@@ -122,30 +119,27 @@ namespace StackExchange.Alexa
         			ShouldEndSession = shouldEndSession,
         			OutputSpeech = new SsmlOutputSpeech()
 		            {
-		            	Ssml = ssml
+		           		Ssml = "<speak>" + ssml + "</speak>"
 		            }
         		}
         	};
         }
 
-        private async Task<string> GetMainMenu(string accessToken)
+        private async Task<string> GetMainMenu()
         {
         	var sb = new StringBuilder();
         	sb.AppendLine("Welcome to Stack Exchange!");
 
-        	if (accessToken != null)
-        	{
-        		var inbox = await Client.GetInbox(accessToken);
-                var newMessages = inbox.items.Count();
-                if (newMessages == 0) 
-                {
-                	sb.AppendLine("You have no unread messages.");
-                }
-                else
-                {
-                	sb.AppendLine($"You have {newMessages} unread messages.");
-                }
-        	}
+    		var inbox = await _client.GetInbox();
+            var newMessages = inbox.items.Count();
+            if (newMessages == 0) 
+            {
+            	sb.AppendLine("You have no unread messages.");
+            }
+            else
+            {
+            	sb.AppendLine($"You have {newMessages} unread messages.");
+            }
 
         	sb.AppendLine(MainMenuOptions);
         	return sb.ToString();
