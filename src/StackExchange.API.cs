@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace StackExchange.API
@@ -58,6 +59,8 @@ namespace StackExchange.API
 		public string title {get; set;}
 		public string body { get; set;}
 		public IEnumerable<string> tags {get; set;}
+
+		public string bodyNoHtml => Regex.Replace(body, "<.*?>", String.Empty);
 	}
 
 	public class Inbox

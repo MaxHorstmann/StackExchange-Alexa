@@ -117,7 +117,7 @@ namespace StackExchange.Alexa
         	var sessionAttributes = new Dictionary<string, object>();
         	sessionAttributes.Add("site", site);
         	sessionAttributes.Add("question_id", question.question_id);
-        	return CreateResponse(question.body, false, sessionAttributes);
+        	return CreateResponse(question.bodyNoHtml, false, sessionAttributes);
         }
 
         private SkillResponse CreateResponse(
