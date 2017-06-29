@@ -24,7 +24,17 @@ namespace StackExchange.Alexa
         {
             try
             {
+            	// Initalize StackExchange API client
 				_client = new Client(input?.Session?.User?.AccessToken);
+
+				// Restore state from previous conversation, if any
+				var site = (string)null;
+				var question_id = (int?)null;
+				if (input?.Session?.Attributes != null)
+				{
+					if (input.Session.Attributes.ContainsKey("site")) site = (string)input.Session.Attributes["site"];
+					if (input.Session.Attributes.ContainsKey("question_id")) question_id = (int?)(input.Session.Attributes["question_id"]);
+				}
 
                 if (input.GetRequestType() == typeof(LaunchRequest)) return await GetLaunchRequestResponse();
                 if (input.GetRequestType() == typeof(IntentRequest))
@@ -33,8 +43,7 @@ namespace StackExchange.Alexa
                 	if (intentRequest.Intent.Name=="InboxIntent") return await GetInboxIntentResponse();
                 	if (intentRequest.Intent.Name=="HotQuestionIntent") return await GetHotQuestionIntentResponse();
                 	if (intentRequest.Intent.Name=="HotQuestionDetailsIntent") 
-                			return await GetHotQuestionDetailsIntentResponse
-                				((string)input.Session.Attributes["site"], (int)input.Session.Attributes["question_id"]);
+                			return await GetHotQuestionDetailsIntentResponse(site, question_id);
                 	if (intentRequest.Intent.Name=="AMAZON.HelpIntent") return CreateResponse(HelpText + MainMenuOptions);
                 	if (intentRequest.Intent.Name=="AMAZON.CancelIntent") return await GetLaunchRequestResponse();
                 	if (intentRequest.Intent.Name=="AMAZON.StopIntent") return CreateResponse("Ok, bye!", true);
@@ -100,9 +109,11 @@ namespace StackExchange.Alexa
         	return CreateResponse(sb.ToString(), false, sessionAttributes);
         }
 
-        private async Task<SkillResponse> GetHotQuestionDetailsIntentResponse(string site, int question_id)
+        private async Task<SkillResponse> GetHotQuestionDetailsIntentResponse(string site, int? question_id)
         {
-        	var question = await _client.GetQuestionDetails(site, question_id);
+        	if ((site == null) || (question_id == null)) return await GetHotQuestionIntentResponse();
+
+        	var question = await _client.GetQuestionDetails(site, question_id.Value);
         	var sessionAttributes = new Dictionary<string, object>();
         	sessionAttributes.Add("site", site);
         	sessionAttributes.Add("question_id", question.question_id);

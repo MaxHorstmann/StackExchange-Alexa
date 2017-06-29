@@ -32,7 +32,7 @@ namespace StackExchange.API
 
         public async Task<Question> GetQuestionDetails(string site, int question_id)
         {
-    		return JsonConvert.DeserializeObject<Question>(await GetApiResponse($"question/{question_id}", $"&site={site}&filter=withbody"));
+    		return JsonConvert.DeserializeObject<Questions>(await GetApiResponse($"questions/{question_id}", $"&site={site}&filter=withbody")).items.First();
         }
 
         private async Task<string> GetApiResponse(string route, string parameters)
