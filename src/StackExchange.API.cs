@@ -30,7 +30,7 @@ namespace StackExchange.API
     			$"&order=desc&sort=hot&pagesize={count}&site={site}"));
         }
 
-        public async Task<Question> GetQuestionDetails(string site, int question_id)
+        public async Task<Question> GetQuestionDetails(string site, long question_id)
         {
     		return JsonConvert.DeserializeObject<Questions>(await GetApiResponse($"questions/{question_id}", $"&site={site}&filter=withbody")).items.First();
         }

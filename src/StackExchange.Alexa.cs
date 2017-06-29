@@ -29,11 +29,11 @@ namespace StackExchange.Alexa
 
 				// Restore state from previous conversation, if any
 				var site = (string)null;
-				var question_id = (int?)null;
+				var question_id = (long?)null;
 				if (input?.Session?.Attributes != null)
 				{
 					if (input.Session.Attributes.ContainsKey("site")) site = (string)input.Session.Attributes["site"];
-					if (input.Session.Attributes.ContainsKey("question_id")) question_id = (int?)(input.Session.Attributes["question_id"]);
+					if (input.Session.Attributes.ContainsKey("question_id")) question_id = (long)(input.Session.Attributes["question_id"]);
 				}
 
                 if (input.GetRequestType() == typeof(LaunchRequest)) return await GetLaunchRequestResponse();
@@ -109,7 +109,7 @@ namespace StackExchange.Alexa
         	return CreateResponse(sb.ToString(), false, sessionAttributes);
         }
 
-        private async Task<SkillResponse> GetHotQuestionDetailsIntentResponse(string site, int? question_id)
+        private async Task<SkillResponse> GetHotQuestionDetailsIntentResponse(string site, long? question_id)
         {
         	if ((site == null) || (question_id == null)) return await GetHotQuestionIntentResponse();
 
