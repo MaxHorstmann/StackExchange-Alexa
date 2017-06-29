@@ -44,6 +44,7 @@ namespace StackExchange.Alexa
                 	if (intentRequest.Intent.Name=="HotQuestionIntent") return await GetHotQuestionIntentResponse();
                 	if (intentRequest.Intent.Name=="HotQuestionDetailsIntent") 
                 			return await GetHotQuestionDetailsIntentResponse(site, question_id);
+                	if (intentRequest.Intent.Name=="UpvoteIntent") return await GetUpvoteIntentResponse(site, question_id);
                 	if (intentRequest.Intent.Name=="AMAZON.HelpIntent") return CreateResponse(HelpText + MainMenuOptions);
                 	if (intentRequest.Intent.Name=="AMAZON.CancelIntent") return await GetLaunchRequestResponse();
                 	if (intentRequest.Intent.Name=="AMAZON.StopIntent") return CreateResponse("Ok, bye!", true);
@@ -119,6 +120,18 @@ namespace StackExchange.Alexa
         	sessionAttributes.Add("question_id", question.question_id);
         	return CreateResponse(question.bodyNoHtml, false, sessionAttributes);
         }
+
+        private async Task<SkillResponse> GetUpvoteIntentResponse(string site, long? question_id)
+        {
+        	if ((site == null) || (question_id == null)) return await GetHotQuestionIntentResponse();
+        	await _client.Upvote(site, question_id.Value);
+        	var sessionAttributes = new Dictionary<string, object>();
+        	sessionAttributes.Add("site", site);
+        	sessionAttributes.Add("question_id", question_id);
+        	return CreateResponse("Ok, upvoted!", false, sessionAttributes);
+        }
+
+        
 
         private SkillResponse CreateResponse(
         		string ssml, 

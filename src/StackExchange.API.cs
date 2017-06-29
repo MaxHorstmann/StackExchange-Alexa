@@ -36,12 +36,22 @@ namespace StackExchange.API
     		return JsonConvert.DeserializeObject<Questions>(await GetApiResponse($"questions/{question_id}", $"&site={site}&filter=withbody")).items.First();
         }
 
-        private async Task<string> GetApiResponse(string route, string parameters)
+        public async Task Upvote(string site, long question_id)
+        {
+    		await GetApiResponse($"questions/{question_id}/upvote", $"&site={site}", true);
+        }
+
+        private async Task<string> GetApiResponse(string route, string parameters, bool post = false)
         {
         	var url = $"/2.2/{route}?access_token={AccessToken}&key={Key}{parameters}";
         	using (var httpClient = new HttpClient())
         	{
         		httpClient.BaseAddress = new Uri(ApiBaseAddress);
+        		if (post)
+        		{
+        			var result = await httpClient.PostAsync(url, null);
+        			return await result.Content.ReadAsStringAsync();
+        		}
         		return await httpClient.GetStringAsync(url);
            	}
         }
