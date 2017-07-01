@@ -18,12 +18,15 @@ namespace StackExchange.Alexa
     public class Service
     {
     	private Client _client;
+    	private ILambdaContext _context;
 
     	// Main entry point
     	public async Task<SkillResponse> GetResponse(SkillRequest input, ILambdaContext context)
         {
             try
             {
+            	_context = context;
+
             	// Initalize StackExchange API client
 				_client = new Client(input?.Session?.User?.AccessToken);
 
@@ -124,7 +127,7 @@ namespace StackExchange.Alexa
         private async Task<SkillResponse> GetUpvoteIntentResponse(string site, long? question_id)
         {
         	if ((site == null) || (question_id == null)) return await GetHotQuestionIntentResponse();
-        	await _client.Upvote(site, question_id.Value);
+        	var response = await _client.Upvote(site, question_id.Value);
         	var sessionAttributes = new Dictionary<string, object>();
         	sessionAttributes.Add("site", site);
         	sessionAttributes.Add("question_id", question_id);

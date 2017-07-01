@@ -22,7 +22,7 @@ namespace StackExchange.API
 
         public async Task<Inbox> GetInbox()
         {
-    		return JsonConvert.DeserializeObject<Inbox>(await GetApiResponse("inbox", "&filter=withbody"));
+    		return JsonConvert.DeserializeObject<Inbox>(await GetApiResponse("inbox/unread", "&filter=withbody"));
         }
 
         public async Task<Questions> GetHotQuestions(string site, int count)
@@ -50,6 +50,7 @@ namespace StackExchange.API
         		httpClient.BaseAddress = new Uri(ApiBaseAddress);
         		if (post)
         		{
+        			// TODO model binder doesn't like that .. might need to use FormUrlEncodedContent or JSON
         			var result = await httpClient.PostAsync(baseUrl, new StringContent(queryString));
         			return await result.Content.ReadAsStringAsync();
         		}
