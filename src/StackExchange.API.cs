@@ -22,7 +22,7 @@ namespace StackExchange.API
 
         public async Task<Inbox> GetInbox()
         {
-    		return JsonConvert.DeserializeObject<Inbox>(await GetApiResponse("inbox","&filter=withbody"));
+    		return JsonConvert.DeserializeObject<Inbox>(await GetApiResponse("inbox", "&filter=withbody"));
         }
 
         public async Task<Questions> GetHotQuestions(string site, int count)
@@ -43,16 +43,21 @@ namespace StackExchange.API
 
         private async Task<string> GetApiResponse(string route, string parameters, bool post = false)
         {
-        	var url = $"/2.2/{route}?access_token={AccessToken}&key={Key}{parameters}";
+        	var baseUrl = $"/2.2/{route}";
+        	var queryString = $"access_token={AccessToken}&key={Key}{parameters}";
         	using (var httpClient = new HttpClient())
         	{
         		httpClient.BaseAddress = new Uri(ApiBaseAddress);
         		if (post)
         		{
-        			var result = await httpClient.PostAsync(url, null);
+        			var result = await httpClient.PostAsync(baseUrl, new StringContent(queryString));
         			return await result.Content.ReadAsStringAsync();
         		}
-        		return await httpClient.GetStringAsync(url);
+        		else
+        		{
+        			var url = $"{baseUrl}?{queryString}";
+	        		return await httpClient.GetStringAsync(url);
+        		}
            	}
         }
 
