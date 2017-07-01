@@ -36,9 +36,9 @@ namespace StackExchange.API
     		return JsonConvert.DeserializeObject<Questions>(await GetApiResponse($"questions/{question_id}", $"&site={site}&filter=withbody")).items.First();
         }
 
-        public async Task Upvote(string site, long question_id)
+        public async Task<Question> Upvote(string site, long question_id)
         {
-    		await GetApiResponse($"questions/{question_id}/upvote", $"&site={site}", true);
+    		return JsonConvert.DeserializeObject<Question>(await GetApiResponse($"questions/{question_id}/upvote", $"&site={site}", true));
         }
 
         private async Task<string> GetApiResponse(string route, string parameters, bool post = false)
@@ -70,7 +70,7 @@ namespace StackExchange.API
 		public string body { get; set;}
 		public IEnumerable<string> tags {get; set;}
 
-		public string bodyNoHtml => Regex.Replace(body, "<.*?>", String.Empty);
+		public string bodyNoHtml => Regex.Replace(body ?? string.Empty, "<.*?>", String.Empty);
 	}
 
 	public class Inbox
