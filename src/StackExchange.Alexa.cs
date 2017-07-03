@@ -136,6 +136,7 @@ namespace StackExchange.Alexa
         	var sessionAttributes = new Dictionary<string, object>();
         	sessionAttributes.Add("site", site);
         	sessionAttributes.Add("question_id", question_id);
+        	var responseText = response.Success ? "Ok, upvated!" : "Sorry, could not upvote.";
         	return CreateResponse("Ok, upvoted!", false, sessionAttributes);
         }
 
