@@ -21,58 +21,71 @@ namespace StackExchange.API
       		AccessToken = accessToken;
       	}
 
-        public async Task<Inbox> GetInbox()
+        public async Task<ApiResponse<Inbox>> GetInbox()
         {
-        	var response = await GetApiResponse("inbox/unread", "&filter=withbody");
-        	if (!response.IsSuccessStatusCode) return null;
-        	return JsonConvert.DeserializeObject<Inbox>(await response.Content.ReadAsStringAsync());
+        	return await GetApiResponse<Inbox>("inbox/unread", "&filter=withbody");
         }
 
-        public async Task<Questions> GetHotQuestions(string site, int count)
+        public async Task<ApiResponse<Questions>> GetHotQuestions(string site, int count)
         {
-        	var response = await GetApiResponse("questions", $"&order=desc&sort=hot&pagesize={count}&site={site}");
-        	if (!response.IsSuccessStatusCode) return null;
-    		return JsonConvert.DeserializeObject<Questions>(await response.Content.ReadAsStringAsync());
+        	return await GetApiResponse<Questions>("questions", $"&order=desc&sort=hot&pagesize={count}&site={site}");
         }
 
-        public async Task<Question> GetQuestionDetails(string site, long question_id)
+        public async Task<ApiResponse<Question>> GetQuestionDetails(string site, long question_id)
         {
-        	var response = await GetApiResponse($"questions/{question_id}", $"&site={site}&filter=withbody");
-        	if (!response.IsSuccessStatusCode) return null;
-    		return JsonConvert.DeserializeObject<Questions>(await response.Content.ReadAsStringAsync()).items.First();
+        	return await GetApiResponse<Question>($"questions/{question_id}", $"&site={site}&filter=withbody");
         }
 
-        public async Task<Question> Upvote(string site, long question_id)
+        public async Task<ApiResponse<Question>> Upvote(string site, long question_id)
         {
-        	var response = await GetApiResponse($"questions/{question_id}/upvote", $"&site={site}", true);
-        	if (!response.IsSuccessStatusCode) 
-        	{
-        		Console.WriteLine(await response.Content.ReadAsStringAsync());
-        		return null; 
-        	}
-    		return JsonConvert.DeserializeObject<Question>(await response.Content.ReadAsStringAsync());
+        	return await GetApiResponse<Question>($"questions/{question_id}/upvote", $"&site={site}", true);
         }
 
-        private async Task<HttpResponseMessage> GetApiResponse(string route, string parameters, bool post = false)
+        private async Task<ApiResponse<T>> GetApiResponse<T>(string route, string parameters, bool post = false)
         {
         	var baseUrl = $"/2.2/{route}";
         	var queryString = $"access_token={AccessToken}&key={Key}{parameters}";
         	using (var httpClient = new HttpClient())
         	{
         		httpClient.BaseAddress = new Uri(ApiBaseAddress);
+        		HttpResponseMessage response;
         		if (post)
         		{
         			var requestContent = new StringContent(queryString, Encoding.UTF8, "application/x-www-form-urlencoded");
-        			return await httpClient.PostAsync(baseUrl, requestContent);
+        			response = await httpClient.PostAsync(baseUrl, requestContent);
         		}
         		else
         		{
         			var url = $"{baseUrl}?{queryString}";
-	        		return await httpClient.GetAsync(url);
+        			response = await httpClient.GetAsync(url);
         		}
+        		var apiResponse = new ApiResponse<T>() { Success = response.IsSuccessStatusCode };
+        		if (apiResponse.Success) 
+        		{
+        			apiResponse.Result = JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+        		}
+        		else
+        		{
+        			apiResponse.Error = JsonConvert.DeserializeObject<ApiError>(await response.Content.ReadAsStringAsync());
+        		}
+        		return apiResponse;
            	}
         }
 
+	}
+
+	public class ApiResponse<T>
+	{
+		public bool Success {get; set;}
+		public T Result {get; set;}
+		public ApiError Error {get; set;}
+	}
+
+	public class ApiError
+	{
+		public int error_id {get ;set;}
+		public string error_name {get; set;}
+		public string error_message {get; set;}
 	}
 
 	public class Questions

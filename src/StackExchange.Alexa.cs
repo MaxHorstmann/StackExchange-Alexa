@@ -72,7 +72,9 @@ namespace StackExchange.Alexa
         private async Task<SkillResponse> GetInboxIntentResponse()
         {
 			var sb = new StringBuilder();
-	        var inbox = await _client.GetInbox();
+			var apiResponse = await _client.GetInbox();
+			if (!apiResponse.Success) return CreateResponse("Sorry. I'm having trouble reading your inbox at the moment. Please try again later.");
+	        var inbox = apiResponse.Result;
 	        if (inbox.items.Count() == 0)
 	        {
 	        	sb.AppendLine("<p>There are no unread items in your inbox.</p>");
@@ -98,7 +100,9 @@ namespace StackExchange.Alexa
         private async Task<SkillResponse> GetHotQuestionIntentResponse()
         {
         	var site = "scifi"; // TODO randomize
-        	var questions = await _client.GetHotQuestions(site, 1);
+        	var apiResponse = await _client.GetHotQuestions(site, 1); 
+        	if (!apiResponse.Success) return CreateResponse("Sorry. I can't access hot questions at the moment. Please try again later.");
+        	var questions = apiResponse.Result;
         	var question = questions.items.First();   // TODO pick random from top 5 or so
 
         	var sb = new StringBuilder();
@@ -116,8 +120,9 @@ namespace StackExchange.Alexa
         private async Task<SkillResponse> GetHotQuestionDetailsIntentResponse(string site, long? question_id)
         {
         	if ((site == null) || (question_id == null)) return await GetHotQuestionIntentResponse();
-
-        	var question = await _client.GetQuestionDetails(site, question_id.Value);
+        	var apiResponse = await _client.GetQuestionDetails(site, question_id.Value);
+        	if (!apiResponse.Success) return CreateResponse("Sorry. There was a technical issue. Please try again later.");
+        	var question = apiResponse.Result;
         	var sessionAttributes = new Dictionary<string, object>();
         	sessionAttributes.Add("site", site);
         	sessionAttributes.Add("question_id", question.question_id);
@@ -159,17 +164,20 @@ namespace StackExchange.Alexa
         private async Task<string> GetMainMenu()
         {
         	var sb = new StringBuilder();
-    		var inbox = await _client.GetInbox();
-            var newMessages = inbox.items.Count();
-            if (newMessages == 0) 
-            {
-            	sb.AppendLine("<p>You have no unread messages.</p>");
-            }
-            else
-            {
-            	sb.AppendLine($"<p>You have {newMessages} unread messages.</p>");
-            }
-
+    		var apiRequest = await _client.GetInbox();
+    		if (apiRequest.Success)
+    		{
+    			var inbox = apiRequest.Result;
+	            var newMessages = inbox.items.Count();
+	            if (newMessages == 0) 
+	            {
+	            	sb.AppendLine("<p>You have no unread messages.</p>");
+	            }
+	            else
+	            {
+	            	sb.AppendLine($"<p>You have {newMessages} unread messages.</p>");
+	            }
+    		}
         	sb.AppendLine(MainMenuOptions);
         	return sb.ToString();
         }
