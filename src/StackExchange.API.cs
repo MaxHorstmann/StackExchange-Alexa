@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,26 +23,37 @@ namespace StackExchange.API
 
         public async Task<Inbox> GetInbox()
         {
-    		return JsonConvert.DeserializeObject<Inbox>(await GetApiResponse("inbox/unread", "&filter=withbody"));
+        	var response = await GetApiResponse("inbox/unread", "&filter=withbody");
+        	if (!response.IsSuccessStatusCode) return null;
+        	return JsonConvert.DeserializeObject<Inbox>(await response.Content.ReadAsStringAsync());
         }
 
         public async Task<Questions> GetHotQuestions(string site, int count)
         {
-    		return JsonConvert.DeserializeObject<Questions>(await GetApiResponse("questions", 
-    			$"&order=desc&sort=hot&pagesize={count}&site={site}"));
+        	var response = await GetApiResponse("questions", $"&order=desc&sort=hot&pagesize={count}&site={site}");
+        	if (!response.IsSuccessStatusCode) return null;
+    		return JsonConvert.DeserializeObject<Questions>(await response.Content.ReadAsStringAsync());
         }
 
         public async Task<Question> GetQuestionDetails(string site, long question_id)
         {
-    		return JsonConvert.DeserializeObject<Questions>(await GetApiResponse($"questions/{question_id}", $"&site={site}&filter=withbody")).items.First();
+        	var response = await GetApiResponse($"questions/{question_id}", $"&site={site}&filter=withbody");
+        	if (!response.IsSuccessStatusCode) return null;
+    		return JsonConvert.DeserializeObject<Questions>(await response.Content.ReadAsStringAsync()).items.First();
         }
 
         public async Task<Question> Upvote(string site, long question_id)
         {
-    		return JsonConvert.DeserializeObject<Question>(await GetApiResponse($"questions/{question_id}/upvote", $"&site={site}", true));
+        	var response = await GetApiResponse($"questions/{question_id}/upvote", $"&site={site}", true);
+        	if (!response.IsSuccessStatusCode) 
+        	{
+        		Console.WriteLine(await response.Content.ReadAsStringAsync());
+        		return null; 
+        	}
+    		return JsonConvert.DeserializeObject<Question>(await response.Content.ReadAsStringAsync());
         }
 
-        private async Task<string> GetApiResponse(string route, string parameters, bool post = false)
+        private async Task<HttpResponseMessage> GetApiResponse(string route, string parameters, bool post = false)
         {
         	var baseUrl = $"/2.2/{route}";
         	var queryString = $"access_token={AccessToken}&key={Key}{parameters}";
@@ -50,14 +62,13 @@ namespace StackExchange.API
         		httpClient.BaseAddress = new Uri(ApiBaseAddress);
         		if (post)
         		{
-        			// TODO model binder doesn't like that .. might need to use FormUrlEncodedContent or JSON
-        			var result = await httpClient.PostAsync(baseUrl, new StringContent(queryString));
-        			return await result.Content.ReadAsStringAsync();
+        			var requestContent = new StringContent(queryString, Encoding.UTF8, "application/x-www-form-urlencoded");
+        			return await httpClient.PostAsync(baseUrl, requestContent);
         		}
         		else
         		{
         			var url = $"{baseUrl}?{queryString}";
-	        		return await httpClient.GetStringAsync(url);
+	        		return await httpClient.GetAsync(url);
         		}
            	}
         }
