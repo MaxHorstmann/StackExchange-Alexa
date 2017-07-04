@@ -148,7 +148,7 @@ namespace StackExchange.Alexa
         			sb.AppendLine($"<p>The question has {question.tags.Count()} tags:</p>");
         			foreach (var tag in question.tags)
         			{
-        				sb.AppendLine($"<p>tag</p>");  
+        				sb.AppendLine($"<p>{tag}</p>");  
         			}
         		}        		
         	}
