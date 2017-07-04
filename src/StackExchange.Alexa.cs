@@ -17,8 +17,15 @@ namespace StackExchange.Alexa
 {
     public class Service
     {
+    	private class State
+    	{
+    		public long? question_id {get; set;}
+    		public string site {get; set;}
+    	}
+
     	private Client _client;
     	private ILambdaContext _context;
+    	private State _state;
 
     	// Main entry point
     	public async Task<SkillResponse> GetResponse(SkillRequest input, ILambdaContext context)
@@ -26,43 +33,36 @@ namespace StackExchange.Alexa
             try
             {
             	_context = context;
-
-            	// Initalize StackExchange API client
-				_client = new Client(input?.Session?.User?.AccessToken);
-
-				// Restore state from previous conversation, if any
-				var site = (string)null;
-				var question_id = (long?)null;
-				if (input?.Session?.Attributes != null)
-				{
-					if (input.Session.Attributes.ContainsKey("site")) site = (string)input.Session.Attributes["site"];
-					if (input.Session.Attributes.ContainsKey("question_id")) question_id = (long)(input.Session.Attributes["question_id"]);
-				}
-
-                if (input.GetRequestType() == typeof(LaunchRequest)) return await GetLaunchRequestResponse();
-                if (input.GetRequestType() == typeof(IntentRequest))
-                {
-                	var intentRequest = (IntentRequest)input.Request;
-                	if (intentRequest.Intent.Name=="InboxIntent") return await GetInboxIntentResponse();
-                	if (intentRequest.Intent.Name=="HotQuestionIntent") return await GetHotQuestionIntentResponse();
-                	if (intentRequest.Intent.Name=="HotQuestionDetailsIntent") 
-                			return await GetHotQuestionDetailsIntentResponse(site, question_id);
-                	if (intentRequest.Intent.Name=="UpvoteIntent") return await GetUpvoteIntentResponse(site, question_id);
-                	if (intentRequest.Intent.Name=="AMAZON.HelpIntent") return CreateResponse(HelpText + MainMenuOptions);
-                	if (intentRequest.Intent.Name=="AMAZON.CancelIntent") return await GetLaunchRequestResponse();
-                	if (intentRequest.Intent.Name=="AMAZON.StopIntent") return CreateResponse("Ok, bye!", true);
-                }
-                return CreateResponse("Sorry, not sure what you're saying.");
+            	_state = RestoreState(input);
+				_client = new Client(input?.Session?.User?.AccessToken); // StackExchange API client
+				return await RouteRequest(input);
             }
             catch (Exception ex)
             {
-	            var log = context.Logger;
-                log.LogLine("Unhandled exception:");
-                log.LogLine(ex.ToString());
-                log.LogLine(JsonConvert.SerializeObject(ex));
+                context.Logger.LogLine("Unhandled exception:");
+                context.Logger.LogLine(ex.ToString());
+                context.Logger.LogLine(JsonConvert.SerializeObject(ex));
                 throw;
             }
         }
+
+    	public async Task<SkillResponse> RouteRequest(SkillRequest input)
+    	{
+            if (input.GetRequestType() == typeof(LaunchRequest)) return await GetLaunchRequestResponse();
+            if (input.GetRequestType() == typeof(IntentRequest))
+            {
+            	var intentRequest = (IntentRequest)input.Request;
+            	if (intentRequest.Intent.Name=="InboxIntent") return await GetInboxIntentResponse();
+            	if (intentRequest.Intent.Name=="HotQuestionIntent") return await GetHotQuestionIntentResponse();
+            	if (intentRequest.Intent.Name=="HotQuestionDetailsIntent") 
+            			return await GetHotQuestionDetailsIntentResponse();
+            	if (intentRequest.Intent.Name=="UpvoteIntent") return await GetUpvoteIntentResponse();
+            	if (intentRequest.Intent.Name=="AMAZON.HelpIntent") return CreateResponse(HelpText + MainMenuOptions);
+            	if (intentRequest.Intent.Name=="AMAZON.CancelIntent") return await GetLaunchRequestResponse();
+            	if (intentRequest.Intent.Name=="AMAZON.StopIntent") return CreateResponse("Ok, bye!", true);
+            }
+            return CreateResponse("Sorry, not sure what you're saying.");
+    	}
 
         private async Task<SkillResponse> GetLaunchRequestResponse()
         {
@@ -111,42 +111,34 @@ namespace StackExchange.Alexa
         	sb.Append($"<p>{question.title}</p>");
         	sb.Append($"<p>Say: more details, next question, or I'm done.</p>");
 
-        	var sessionAttributes = new Dictionary<string, object>();
-        	sessionAttributes.Add("site", site);
-        	sessionAttributes.Add("question_id", question.question_id);
-        	return CreateResponse(sb.ToString(), false, sessionAttributes);
+        	return CreateResponse(sb.ToString(), false);
         }
 
-        private async Task<SkillResponse> GetHotQuestionDetailsIntentResponse(string site, long? question_id)
+        private async Task<SkillResponse> GetHotQuestionDetailsIntentResponse()
         {
-        	if ((site == null) || (question_id == null)) return await GetHotQuestionIntentResponse();
-        	var apiResponse = await _client.GetQuestionDetails(site, question_id.Value);
+        	if ((_state?.site == null) || (_state?.question_id == null)) return await GetHotQuestionIntentResponse();
+        	var apiResponse = await _client.GetQuestionDetails(_state.site, _state.question_id.Value);
         	if (!apiResponse.Success) return CreateResponse("Sorry. There was a technical issue. Please try again later.");
         	var question = apiResponse.Result;
-        	var sessionAttributes = new Dictionary<string, object>();
-        	sessionAttributes.Add("site", site);
-        	sessionAttributes.Add("question_id", question.question_id);
-        	return CreateResponse(question.bodyNoHtml, false, sessionAttributes);
+        	return CreateResponse(question.bodyNoHtml, false);
         }
 
-        private async Task<SkillResponse> GetUpvoteIntentResponse(string site, long? question_id)
+        private async Task<SkillResponse> GetUpvoteIntentResponse()
         {
-        	if ((site == null) || (question_id == null)) return await GetHotQuestionIntentResponse();
-        	var response = await _client.Upvote(site, question_id.Value);
-        	var sessionAttributes = new Dictionary<string, object>();
-        	sessionAttributes.Add("site", site);
-        	sessionAttributes.Add("question_id", question_id);
+        	if ((_state?.site == null) || (_state?.question_id == null)) return await GetHotQuestionIntentResponse();
+        	var response = await _client.Upvote(_state.site, _state.question_id.Value);
         	var responseText = response.Success ? "Ok, upvated!" : "Sorry, could not upvote.";
-        	return CreateResponse("Ok, upvoted!", false, sessionAttributes);
+        	return CreateResponse("Ok, upvoted!", false);
         }
-
-        
 
         private SkillResponse CreateResponse(
         		string ssml, 
-        		bool shouldEndSession = false, 
-        		Dictionary<string, object> sessionAttributes = null)
+        		bool shouldEndSession = false)
         {
+        	var sessionAttributes = new Dictionary<string, object>();
+        	sessionAttributes.Add("site", _state?.site);
+        	sessionAttributes.Add("question_id", _state?.question_id);
+
         	return new SkillResponse()
         	{
     			Version = "1.0",
@@ -160,6 +152,17 @@ namespace StackExchange.Alexa
 		            }
         		}
         	};
+        }
+
+        private static State RestoreState(SkillRequest input)
+        {
+        	var state = new State();
+			if (input?.Session?.Attributes != null)
+			{
+				if (input.Session.Attributes.ContainsKey("site")) state.site = (string)input.Session.Attributes["site"];
+				if (input.Session.Attributes.ContainsKey("question_id")) state.question_id = (long)(input.Session.Attributes["question_id"]);
+			}
+			return state;
         }
 
         private async Task<string> GetMainMenu()
