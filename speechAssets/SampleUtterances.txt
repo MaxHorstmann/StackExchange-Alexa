@@ -14,7 +14,9 @@ HotQuestionIntent browse questions
 HotQuestionDetailsIntent more details
 HotQuestionDetailsIntent question details
 HotQuestionDetailsIntent tell me more
+UpvoteIntent upvote
 UpvoteIntent up vote
+DownvoteIntent downvote
 DownvoteIntent down vote
 AMAZON.HelpIntent help
 AMAZON.HelpIntent get help

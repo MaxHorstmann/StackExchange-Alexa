@@ -111,7 +111,7 @@ namespace StackExchange.Alexa
         private async Task<SkillResponse> GetHotQuestionIntentResponse()
         {
         	_state.site = "scifi"; // TODO randomize
-        	var apiResponse = await _client.GetHotQuestions(_state.site, 5); 
+        	var apiResponse = await _client.GetHotQuestions(_state.site, 10); 
         	if (!apiResponse.Success) return CreateResponse("Sorry. I can't access hot questions at the moment. Please try again later.");
         	var questions = apiResponse.Result.items.ToList();
         	var rand = new Random();
@@ -170,7 +170,8 @@ namespace StackExchange.Alexa
         	{
         		return CreateResponse($"<p>Sorry, I wasn't able to upvote the question for you.</p><p>{response.Error.error_message}</p>");
         	}
-        	return CreateResponse($"<p>Ok! With your upvote, the question now has a score of {response.Result.score}.</p>", false);
+        	var score = response.Result.items.First().score;
+        	return CreateResponse($"<p>Ok! With your upvote, the question now has a score of {score}.</p>", false);
         }
 
         private SkillResponse CreateResponse(

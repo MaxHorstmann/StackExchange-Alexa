@@ -36,9 +36,9 @@ namespace StackExchange.API
         	return await GetApiResponse<Questions>($"questions/{question_id}", $"&site={site}&filter=withbody");
         }
 
-        public async Task<ApiResponse<Question>> Upvote(string site, long question_id)
+        public async Task<ApiResponse<Questions>> Upvote(string site, long question_id)
         {
-        	return await GetApiResponse<Question>($"questions/{question_id}/upvote", $"&site={site}", true);
+        	return await GetApiResponse<Questions>($"questions/{question_id}/upvote", $"&site={site}", true);
         }
 
         private async Task<ApiResponse<T>> GetApiResponse<T>(string route, string parameters, bool post = false)
@@ -86,7 +86,7 @@ namespace StackExchange.API
 
 	public class ApiError
 	{
-		public int error_id {get ;set;}
+		public long error_id {get ;set;}
 		public string error_name {get; set;}
 		public string error_message {get; set;}
 	}
@@ -98,11 +98,11 @@ namespace StackExchange.API
 
 	public class Question
 	{
-		public int question_id {get; set;}
+		public long question_id {get; set;}
 		public string title {get; set;}
 		public string body { get; set;}
 		public IEnumerable<string> tags {get; set;}
-		public int score {get; set;}
+		public long score {get; set;}
 
 		public string bodyNoHtml => Regex.Replace(body ?? string.Empty, "<.*?>", String.Empty);
 	}
