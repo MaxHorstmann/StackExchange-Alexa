@@ -42,8 +42,7 @@ namespace StackExchange.Alexa
                 context.Logger.LogLine("Unhandled exception:");
                 context.Logger.LogLine(ex.ToString());
                 context.Logger.LogLine(JsonConvert.SerializeObject(ex));
-                return CreateResponse(ex.ToString());
-                //throw;
+                return CreateResponse("Sorry, there was a technical problem.");
             }
         }
 
@@ -112,10 +111,11 @@ namespace StackExchange.Alexa
         private async Task<SkillResponse> GetHotQuestionIntentResponse()
         {
         	_state.site = "scifi"; // TODO randomize
-        	var apiResponse = await _client.GetHotQuestions(_state.site, 1); 
+        	var apiResponse = await _client.GetHotQuestions(_state.site, 5); 
         	if (!apiResponse.Success) return CreateResponse("Sorry. I can't access hot questions at the moment. Please try again later.");
-        	var questions = apiResponse.Result;
-        	var question = questions.items.First();   // TODO pick random from top 5 or so
+        	var questions = apiResponse.Result.items.ToList();
+        	var rand = new Random();
+        	var question = questions[rand.Next(questions.Count)];
         	_state.question_id = question.question_id;
 
         	var sb = new StringBuilder();
@@ -166,8 +166,11 @@ namespace StackExchange.Alexa
         {
         	if ((_state?.site == null) || (_state?.question_id == null)) return await GetHotQuestionIntentResponse();
         	var response = await _client.Upvote(_state.site, _state.question_id.Value);
-        	var responseText = response.Success ? "Ok, upvated!" : "Sorry, could not upvote.";
-        	return CreateResponse("Ok, upvoted!", false);
+        	if (!response.Success)
+        	{
+        		return CreateResponse($"<p>Sorry, I wasn't able to upvote the question for you.</p><p>{response.Error.error_message}</p>");
+        	}
+        	return CreateResponse($"<p>Ok! With your upvote, the question now has a score of {response.Result.score}.</p>", false);
         }
 
         private SkillResponse CreateResponse(

@@ -69,7 +69,7 @@ namespace StackExchange.API
         		{
         			apiResponse.Error = JsonConvert.DeserializeObject<ApiError>(responseContent);
         		}
-        		apiResponse.RawResponse = responseContent;
+        		//apiResponse.RawResponse = responseContent;
         		return apiResponse;
            	}
         }
@@ -81,7 +81,7 @@ namespace StackExchange.API
 		public bool Success {get; set;}
 		public T Result {get; set;}
 		public ApiError Error {get; set;}
-		public string RawResponse { get; set;} // for debugging
+		//public string RawResponse { get; set;} // for debugging
 	}
 
 	public class ApiError
@@ -102,6 +102,7 @@ namespace StackExchange.API
 		public string title {get; set;}
 		public string body { get; set;}
 		public IEnumerable<string> tags {get; set;}
+		public int score {get; set;}
 
 		public string bodyNoHtml => Regex.Replace(body ?? string.Empty, "<.*?>", String.Empty);
 	}
