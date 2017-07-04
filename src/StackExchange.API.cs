@@ -31,9 +31,9 @@ namespace StackExchange.API
         	return await GetApiResponse<Questions>("questions", $"&order=desc&sort=hot&pagesize={count}&site={site}");
         }
 
-        public async Task<ApiResponse<Question>> GetQuestionDetails(string site, long question_id)
+        public async Task<ApiResponse<Questions>> GetQuestionDetails(string site, long question_id)
         {
-        	return await GetApiResponse<Question>($"questions/{question_id}", $"&site={site}&filter=withbody");
+        	return await GetApiResponse<Questions>($"questions/{question_id}", $"&site={site}&filter=withbody");
         }
 
         public async Task<ApiResponse<Question>> Upvote(string site, long question_id)
@@ -60,14 +60,16 @@ namespace StackExchange.API
         			response = await httpClient.GetAsync(url);
         		}
         		var apiResponse = new ApiResponse<T>() { Success = response.IsSuccessStatusCode };
+        		var responseContent = await response.Content.ReadAsStringAsync();
         		if (apiResponse.Success) 
         		{
-        			apiResponse.Result = JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+        			apiResponse.Result = JsonConvert.DeserializeObject<T>(responseContent);
         		}
         		else
         		{
-        			apiResponse.Error = JsonConvert.DeserializeObject<ApiError>(await response.Content.ReadAsStringAsync());
+        			apiResponse.Error = JsonConvert.DeserializeObject<ApiError>(responseContent);
         		}
+        		apiResponse.RawResponse = responseContent;
         		return apiResponse;
            	}
         }
@@ -79,6 +81,7 @@ namespace StackExchange.API
 		public bool Success {get; set;}
 		public T Result {get; set;}
 		public ApiError Error {get; set;}
+		public string RawResponse { get; set;} // for debugging
 	}
 
 	public class ApiError

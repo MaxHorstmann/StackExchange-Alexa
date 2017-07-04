@@ -129,9 +129,11 @@ namespace StackExchange.Alexa
         private async Task<SkillResponse> GetHotQuestionDetailsIntentResponse()
         {
         	if ((_state?.site == null) || (_state?.question_id == null)) return await GetHotQuestionIntentResponse();
+
         	var apiResponse = await _client.GetQuestionDetails(_state.site, _state.question_id.Value);
+
         	if (!apiResponse.Success) return CreateResponse("Sorry. There was a technical issue. Please try again later.");
-        	var question = apiResponse.Result;
+        	var question = apiResponse.Result.items.First();
 
         	var sb = new StringBuilder();
         	if ((question.tags != null) && (question.tags.Any()))
