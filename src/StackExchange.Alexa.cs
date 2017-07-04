@@ -46,7 +46,18 @@ namespace StackExchange.Alexa
             }
         }
 
-    	public async Task<SkillResponse> RouteRequest(SkillRequest input)
+        private static State RestoreState(SkillRequest input)
+        {
+        	var state = new State();
+			if (input?.Session?.Attributes != null)
+			{
+				if (input.Session.Attributes.ContainsKey("site")) state.site = (string)input.Session.Attributes["site"];
+				if (input.Session.Attributes.ContainsKey("question_id")) state.question_id = (long)(input.Session.Attributes["question_id"]);
+			}
+			return state;
+        }
+
+        public async Task<SkillResponse> RouteRequest(SkillRequest input)
     	{
             if (input.GetRequestType() == typeof(LaunchRequest)) return await GetLaunchRequestResponse();
             if (input.GetRequestType() == typeof(IntentRequest))
@@ -152,17 +163,6 @@ namespace StackExchange.Alexa
 		            }
         		}
         	};
-        }
-
-        private static State RestoreState(SkillRequest input)
-        {
-        	var state = new State();
-			if (input?.Session?.Attributes != null)
-			{
-				if (input.Session.Attributes.ContainsKey("site")) state.site = (string)input.Session.Attributes["site"];
-				if (input.Session.Attributes.ContainsKey("question_id")) state.question_id = (long)(input.Session.Attributes["question_id"]);
-			}
-			return state;
         }
 
         private async Task<string> GetMainMenu()
