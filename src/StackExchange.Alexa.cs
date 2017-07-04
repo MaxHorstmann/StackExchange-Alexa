@@ -131,7 +131,30 @@ namespace StackExchange.Alexa
         	var apiResponse = await _client.GetQuestionDetails(_state.site, _state.question_id.Value);
         	if (!apiResponse.Success) return CreateResponse("Sorry. There was a technical issue. Please try again later.");
         	var question = apiResponse.Result;
-        	return CreateResponse(question.bodyNoHtml, false);
+
+        	var sb = new StringBuilder();
+        	if ((question.tags != null) && (question.tags.Any()))
+        	{
+        		if (question.tags.Count() == 1)
+        		{
+        			sb.AppendLine("<p>The question has a single tag:</p>");
+        			sb.AppendLine($"<p>{question.tags.First()}</p>");
+        		}
+        		else
+        		{
+        			sb.AppendLine($"<p>The question has {question.tags.Count()} tags:</p>");
+        			foreach (var tag in question.tags)
+        			{
+        				sb.AppendLine($"<p>tag</p>");  
+        			}
+        		}        		
+        	}
+
+        	sb.AppendLine($"<p>Here's the full question: {question.bodyNoHtml}</p>");
+        	sb.AppendLine("<break time=\"3s\"/>");
+        	sb.AppendLine("<p>Please say: upvote, downvote, answers, next question, or I'm done.</p>");
+
+        	return CreateResponse(sb.ToString(), false);
         }
 
         private async Task<SkillResponse> GetUpvoteIntentResponse()
