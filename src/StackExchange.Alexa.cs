@@ -151,6 +151,7 @@ namespace StackExchange.Alexa
         				sb.AppendLine($"<p>{tag}</p>");  
         			}
         		}        		
+	        	sb.AppendLine("<break time=\"2s\"/>");
         	}
 
         	sb.AppendLine($"<p>Here's the full question: {question.bodyNoHtml}</p>");
