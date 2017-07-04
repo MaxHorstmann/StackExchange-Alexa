@@ -157,7 +157,7 @@ namespace StackExchange.Alexa
         	sb.AppendLine($"<p>Here's the full question:</p>");
         	sb.AppendLine($"<p>{question.bodyNoHtml}</p>");
         	sb.AppendLine("<break time=\"2s\"/>");
-        	sb.AppendLine("<p>Please say: cast upvote, cast downvote, answers, next question, or I'm done.</p>");
+        	sb.AppendLine("<p>Please say: upvote, downvote, answers, next question, or I'm done.</p>");
 
         	return CreateResponse(sb.ToString(), false);
         }
