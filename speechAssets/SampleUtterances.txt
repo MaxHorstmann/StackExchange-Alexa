@@ -14,10 +14,8 @@ HotQuestionIntent browse questions
 HotQuestionDetailsIntent more details
 HotQuestionDetailsIntent question details
 HotQuestionDetailsIntent tell me more
-UpvoteIntent upvote
-UpvoteIntent cast an upvote
-DownvoteIntent downvote
-DownvoteIntent cast a downvote
+UpvoteIntent up vote
+DownvoteIntent down vote
 AMAZON.HelpIntent help
 AMAZON.HelpIntent get help
 AMAZON.HelpIntent help me
