@@ -42,7 +42,8 @@ namespace StackExchange.Alexa
                 context.Logger.LogLine("Unhandled exception:");
                 context.Logger.LogLine(ex.ToString());
                 context.Logger.LogLine(JsonConvert.SerializeObject(ex));
-                throw;
+                return CreateResponse(ex.ToString());
+                //throw;
             }
         }
 
@@ -52,7 +53,7 @@ namespace StackExchange.Alexa
 			if (input?.Session?.Attributes != null)
 			{
 				if (input.Session.Attributes.ContainsKey("site")) state.site = (string)input.Session.Attributes["site"];
-				if (input.Session.Attributes.ContainsKey("question_id")) state.question_id = (long)(input.Session.Attributes["question_id"]);
+				if (input.Session.Attributes.ContainsKey("question_id")) state.question_id = (long?)(input.Session.Attributes["question_id"]);
 			}
 			return state;
         }
@@ -110,15 +111,15 @@ namespace StackExchange.Alexa
 
         private async Task<SkillResponse> GetHotQuestionIntentResponse()
         {
-        	var site = "scifi"; // TODO randomize
-        	var apiResponse = await _client.GetHotQuestions(site, 1); 
+        	_state.site = "scifi"; // TODO randomize
+        	var apiResponse = await _client.GetHotQuestions(_state.site, 1); 
         	if (!apiResponse.Success) return CreateResponse("Sorry. I can't access hot questions at the moment. Please try again later.");
         	var questions = apiResponse.Result;
         	var question = questions.items.First();   // TODO pick random from top 5 or so
+        	_state.question_id = question.question_id;
 
         	var sb = new StringBuilder();
-
-        	sb.Append($"<p>Here's a hot question from {site}:</p>");
+        	sb.Append($"<p>Here's a hot question from {_state.site}:</p>");
         	sb.Append($"<p>{question.title}</p>");
         	sb.Append($"<p>Say: more details, next question, or I'm done.</p>");
 
