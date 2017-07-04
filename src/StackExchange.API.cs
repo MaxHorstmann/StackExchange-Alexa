@@ -12,33 +12,35 @@ namespace StackExchange.API
 {
 	public class Client
 	{
-      	const string Key = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
       	const string ApiBaseAddress = "https://api.stackexchange.com";
 
       	private readonly string AccessToken;
-      	public Client(string accessToken)
+      	private readonly string Key;
+
+      	public Client(string key, string accessToken)
       	{
+      		Key = key;
       		AccessToken = accessToken;
       	}
 
-        public async Task<ApiResponse<Inbox>> GetInbox()
+        public async Task<ApiResponse<InboxItem>> GetInbox()
         {
-        	return await GetApiResponse<Inbox>("inbox/unread", "&filter=withbody");
+        	return await GetApiResponse<InboxItem>("inbox/unread", "&filter=withbody");
         }
 
-        public async Task<ApiResponse<Questions>> GetHotQuestions(string site, int count)
+        public async Task<ApiResponse<Question>> GetHotQuestions(string site, int count)
         {
-        	return await GetApiResponse<Questions>("questions", $"&order=desc&sort=hot&pagesize={count}&site={site}");
+        	return await GetApiResponse<Question>("questions", $"&order=desc&sort=hot&pagesize={count}&site={site}");
         }
 
-        public async Task<ApiResponse<Questions>> GetQuestionDetails(string site, long question_id)
+        public async Task<ApiResponse<Question>> GetQuestionDetails(string site, long question_id)
         {
-        	return await GetApiResponse<Questions>($"questions/{question_id}", $"&site={site}&filter=withbody");
+        	return await GetApiResponse<Question>($"questions/{question_id}", $"&site={site}&filter=withbody");
         }
 
-        public async Task<ApiResponse<Questions>> Upvote(string site, long question_id)
+        public async Task<ApiResponse<Question>> Upvote(string site, long question_id)
         {
-        	return await GetApiResponse<Questions>($"questions/{question_id}/upvote", $"&site={site}", true);
+        	return await GetApiResponse<Question>($"questions/{question_id}/upvote", $"&site={site}", true);
         }
 
         private async Task<ApiResponse<T>> GetApiResponse<T>(string route, string parameters, bool post = false)
@@ -59,18 +61,7 @@ namespace StackExchange.API
         			var url = $"{baseUrl}?{queryString}";
         			response = await httpClient.GetAsync(url);
         		}
-        		var apiResponse = new ApiResponse<T>() { Success = response.IsSuccessStatusCode };
-        		var responseContent = await response.Content.ReadAsStringAsync();
-        		if (apiResponse.Success) 
-        		{
-        			apiResponse.Result = JsonConvert.DeserializeObject<T>(responseContent);
-        		}
-        		else
-        		{
-        			apiResponse.Error = JsonConvert.DeserializeObject<ApiError>(responseContent);
-        		}
-        		//apiResponse.RawResponse = responseContent;
-        		return apiResponse;
+        		return JsonConvert.DeserializeObject<ApiResponse<T>>(await response.Content.ReadAsStringAsync());
            	}
         }
 
@@ -78,22 +69,12 @@ namespace StackExchange.API
 
 	public class ApiResponse<T>
 	{
-		public bool Success {get; set;}
-		public T Result {get; set;}
-		public ApiError Error {get; set;}
-		//public string RawResponse { get; set;} // for debugging
-	}
-
-	public class ApiError
-	{
-		public long error_id {get ;set;}
+		public IEnumerable<T> items {get; set;}
+		public long? error_id {get ;set;}
 		public string error_name {get; set;}
 		public string error_message {get; set;}
-	}
 
-	public class Questions
-	{
-		public IEnumerable<Question> items {get; set;}
+		public bool Success => error_id == null;
 	}
 
 	public class Question
@@ -105,11 +86,6 @@ namespace StackExchange.API
 		public long score {get; set;}
 
 		public string bodyNoHtml => Regex.Replace(body ?? string.Empty, "<.*?>", String.Empty);
-	}
-
-	public class Inbox
-	{
-		public IEnumerable<InboxItem> items { get; set; }
 	}
 
 	public class InboxItem

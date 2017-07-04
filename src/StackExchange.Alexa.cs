@@ -17,6 +17,8 @@ namespace StackExchange.Alexa
 {
     public class Service
     {
+      	const string StackApiKey = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
+
     	private class State
     	{
     		public long? question_id {get; set;}
@@ -34,7 +36,7 @@ namespace StackExchange.Alexa
             {
             	_context = context;
             	_state = RestoreState(input);
-				_client = new Client(input?.Session?.User?.AccessToken); // StackExchange API client
+				_client = new Client(StackApiKey, input?.Session?.User?.AccessToken); // StackExchange API client
 				return await RouteRequest(input);
             }
             catch (Exception ex)
@@ -85,16 +87,15 @@ namespace StackExchange.Alexa
 			var sb = new StringBuilder();
 			var apiResponse = await _client.GetInbox();
 			if (!apiResponse.Success) return CreateResponse("Sorry. I'm having trouble reading your inbox at the moment. Please try again later.");
-	        var inbox = apiResponse.Result;
-	        if (inbox.items.Count() == 0)
+	        if (apiResponse.items.Count() == 0)
 	        {
 	        	sb.AppendLine("<p>There are no unread items in your inbox.</p>");
 	        }
 	        else
 	        {
-	        	sb.AppendLine($"<p>There are {inbox.items.Count()} unread items in your inbox.</p>");
+	        	sb.AppendLine($"<p>There are {apiResponse.items.Count()} unread items in your inbox.</p>");
 	        	var i = 0;
-	        	foreach (var item in inbox.items)
+	        	foreach (var item in apiResponse.items)
 	        	{
 	        		i++;
 	        		sb.Append("<p>");
@@ -113,7 +114,7 @@ namespace StackExchange.Alexa
         	_state.site = "scifi"; // TODO randomize
         	var apiResponse = await _client.GetHotQuestions(_state.site, 10); 
         	if (!apiResponse.Success) return CreateResponse("Sorry. I can't access hot questions at the moment. Please try again later.");
-        	var questions = apiResponse.Result.items.ToList();
+        	var questions = apiResponse.items.ToList();
         	var rand = new Random();
         	var question = questions[rand.Next(questions.Count)];
         	_state.question_id = question.question_id;
@@ -133,7 +134,7 @@ namespace StackExchange.Alexa
         	var apiResponse = await _client.GetQuestionDetails(_state.site, _state.question_id.Value);
 
         	if (!apiResponse.Success) return CreateResponse("Sorry. There was a technical issue. Please try again later.");
-        	var question = apiResponse.Result.items.First();
+        	var question = apiResponse.items.First();
 
         	var sb = new StringBuilder();
         	if ((question.tags != null) && (question.tags.Any()))
@@ -168,9 +169,9 @@ namespace StackExchange.Alexa
         	var response = await _client.Upvote(_state.site, _state.question_id.Value);
         	if (!response.Success)
         	{
-        		return CreateResponse($"<p>Sorry, I wasn't able to upvote the question for you.</p><p>{response.Error.error_message}</p>");
+        		return CreateResponse($"<p>Sorry, I wasn't able to upvote the question for you.</p><p>{response.error_message}</p>");
         	}
-        	var score = response.Result.items.First().score;
+        	var score = response.items.First().score;
         	return CreateResponse($"<p>Ok! With your upvote, the question now has a score of {score}.</p>", false);
         }
 
@@ -203,8 +204,7 @@ namespace StackExchange.Alexa
     		var apiRequest = await _client.GetInbox();
     		if (apiRequest.Success)
     		{
-    			var inbox = apiRequest.Result;
-	            var newMessages = inbox.items.Count();
+	            var newMessages = apiRequest.items.Count();
 	            if (newMessages == 0) 
 	            {
 	            	sb.AppendLine("<p>You have no unread messages.</p>");
