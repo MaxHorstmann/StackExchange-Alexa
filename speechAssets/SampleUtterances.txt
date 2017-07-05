@@ -21,6 +21,12 @@ UpvoteIntent upvote
 UpvoteIntent up vote
 DownvoteIntent downvote
 DownvoteIntent down vote
+FavoriteIntent favorite
+FavoriteIntent add favorite
+FavoriteIntent add to favorites
+FavoriteIntent star
+FavoriteIntent add star
+FavoriteIntent favorite this question
 AMAZON.HelpIntent help
 AMAZON.HelpIntent get help
 AMAZON.HelpIntent help me

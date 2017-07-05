@@ -16,6 +16,9 @@
       "intent": "DownvoteIntent"
     },
     {
+      "intent": "FavoriteIntent"
+    },
+    {
       "intent": "AMAZON.HelpIntent"
     },
     {
