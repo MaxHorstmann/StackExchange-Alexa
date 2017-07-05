@@ -17,7 +17,10 @@ Sample dialog:
 
 # Enable Skill on my Echo
 
-This skill hasn't been published yet to Amazon. Stay tuned!
+This skill hasn't been published yet to Amazon. Mainly, I'm waiting for Amazon to resolve [this](https://forums.developer.amazon.com/questions/75718/oauth-state-parameter-too-long-can-it-be-shortened.html).
+
+In the meantime, feel free to [contact me](https://twitter.com/Max_Horstmann) if you're interested in beta testing.
+
 
 # Technical Details
 
