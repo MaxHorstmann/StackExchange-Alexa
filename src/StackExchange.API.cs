@@ -14,13 +14,13 @@ namespace StackExchange.API
 	{
       	const string ApiBaseAddress = "https://api.stackexchange.com";
 
-      	private readonly string AccessToken;
-      	private readonly string Key;
+      	private readonly string _accessToken;
+      	private readonly string _key;
 
       	public Client(string key, string accessToken)
       	{
-      		Key = key;
-      		AccessToken = accessToken;
+      		_key = key;
+      		_accessToken = accessToken;
       	}
 
         public async Task<ApiResponse<InboxItem>> GetInbox()
@@ -46,7 +46,7 @@ namespace StackExchange.API
         private async Task<ApiResponse<T>> GetApiResponse<T>(string route, string parameters, bool post = false)
         {
         	var baseUrl = $"/2.2/{route}";
-        	var queryString = $"access_token={AccessToken}&key={Key}{parameters}";
+        	var queryString = $"access_token={_accessToken}&key={_key}{parameters}";
         	using (var httpClient = new HttpClient())
         	{
         		httpClient.BaseAddress = new Uri(ApiBaseAddress);
