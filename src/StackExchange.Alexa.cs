@@ -112,16 +112,21 @@ namespace StackExchange.Alexa
         private async Task<SkillResponse> GetHotQuestionIntentResponse()
         {
         	var rand = new Random();
+
+        	// pick random site
         	var sites = (await _client.GetSites()).items.ToList();
-        	_state.site = sites[rand.Next(sites.Count)].api_site_parameter;
-        	var apiResponse = await _client.GetHotQuestions(_state.site, 10); 
-        	if (!apiResponse.Success) return CreateResponse("Sorry. I can't access hot questions at the moment. Please try again later.");
-        	var questions = apiResponse.items.ToList();
+        	sites = sites.Where(m => m.site_type == "main_site" && m.site_state == "normal").ToList();
+        	var randomSite = sites[rand.Next(sites.Count)];
+        	_state.site = randomSite.api_site_parameter;
+
+			// pick random hot question        	
+        	var questions = (await _client.GetHotQuestions(_state.site, 10)).items.ToList(); 
         	var question = questions[rand.Next(questions.Count)];
         	_state.question_id = question.question_id;
 
         	var sb = new StringBuilder();
-        	sb.Append($"<p>Here's a hot question from {_state.site}:</p>");
+        	sb.Append($"<p>{sites.Count} sites.</p>");
+        	sb.Append($"<p>Here's a hot question from {randomSite.name}:</p>");
         	sb.Append($"<p>{question.title}</p>");
         	sb.Append($"<p>Say: more details, next question, or I'm done.</p>");
 

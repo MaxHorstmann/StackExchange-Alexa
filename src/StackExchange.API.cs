@@ -111,5 +111,7 @@ namespace StackExchange.API
 		public string api_site_parameter {get; set;}
 		public string name {get; set;}
 		public string site_url {get; set;}
+		public string site_type {get; set;}
+		public string site_state {get; set;}
 	}
 }
