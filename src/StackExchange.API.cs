@@ -53,6 +53,11 @@ namespace StackExchange.API
         	return await GetApiResponse<Question>($"questions/{question_id}/downvote", $"&site={site}", true);
         }
 
+        public async Task<ApiResponse<Question>> Favorite(string site, long question_id)
+        {
+        	return await GetApiResponse<Question>($"questions/{question_id}/favorite", $"&site={site}", true);
+        }
+
         private async Task<ApiResponse<T>> GetApiResponse<T>(string route, string parameters, bool post = false)
         {
         	var baseUrl = $"/2.2/{route}";

@@ -71,6 +71,7 @@ namespace StackExchange.Alexa
             			return await GetHotQuestionDetailsIntentResponse();
             	if (intentRequest.Intent.Name=="UpvoteIntent") return await GetUpvoteIntentResponse();
             	if (intentRequest.Intent.Name=="DownvoteIntent") return await GetDownvoteIntentResponse();
+            	if (intentRequest.Intent.Name=="FavoriteIntent") return await GetFavoriteIntentResponse();
             	if (intentRequest.Intent.Name=="AMAZON.HelpIntent") return CreateResponse(HelpText + MainMenuOptions);
             	if (intentRequest.Intent.Name=="AMAZON.CancelIntent") return await GetLaunchRequestResponse();
             	if (intentRequest.Intent.Name=="AMAZON.StopIntent") return CreateResponse("Ok, bye!", true);
@@ -202,6 +203,16 @@ namespace StackExchange.Alexa
         	return CreateResponse($"<p>Ok! The question now has a score of {score}.</p>", false);
         }
 
+        private async Task<SkillResponse> GetFavoriteIntentResponse()
+        {
+        	if ((_state?.site == null) || (_state?.question_id == null)) return await GetHotQuestionIntentResponse();
+        	var response = await _client.Favorite(_state.site, _state.question_id.Value);
+        	if (!response.Success)
+        	{
+        		return CreateResponse($"<p>{response.error_message}</p>");
+        	}
+        	return CreateResponse($"<p>Ok, you favorited this question!</p>", false);
+        }
 
         private SkillResponse CreateResponse(
         		string ssml, 
