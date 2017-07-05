@@ -30,14 +30,17 @@ namespace StackExchange.Alexa
     	private State _state;
 
     	// Main entry point
-    	public async Task<SkillResponse> GetResponse(SkillRequest input, ILambdaContext context)
+    	public async Task<SkillResponse> GetResponse(SkillRequest request, ILambdaContext context)
         {
+            context.Logger.LogLine(JsonConvert.SerializeObject(input);
             try
             {
             	_context = context;
-            	_state = RestoreState(input);
-				_client = new Client(StackApiKey, input?.Session?.User?.AccessToken); // StackExchange API client
-				return await RouteRequest(input);
+            	_state = RestoreState(request);
+				_client = new Client(StackApiKey, request?.Session?.User?.AccessToken); // StackExchange API client
+				var response = await RouteRequest(request);
+	            context.Logger.LogLine(JsonConvert.SerializeObject(response);
+				return response;
             }
             catch (Exception ex)
             {
