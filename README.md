@@ -21,7 +21,8 @@ This skill hasn't been published yet to Amazon. Stay tuned!
 
 # Technical Details
 
-* Written in C# / .NET Core
-* Hosted on Amazon Lambda ([setup instructions](https://github.com/MaxHorstmann/StackExchange-Alexa/blob/master/setup.md)).
+* Written in C# on .NET Core 1.1
+* Uses [Tim Heuer](https://twitter.com/timheuer)'s [Alexa.NET](https://www.nuget.org/packages/Alexa.NET) library
 * Uses the public [Stack Exchange API](https://api.stackexchange.com). See [StackApps Post](https://stackapps.com/questions/7480).
+* Hosted on Amazon Lambda ([setup instructions](https://github.com/MaxHorstmann/StackExchange-Alexa/blob/master/setup.md)).
 
