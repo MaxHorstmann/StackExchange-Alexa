@@ -111,11 +111,12 @@ namespace StackExchange.Alexa
 
         private async Task<SkillResponse> GetHotQuestionIntentResponse()
         {
-        	_state.site = "scifi"; // TODO randomize
+        	var rand = new Random();
+        	var sites = (await _client.GetSites()).items.ToList();
+        	_state.site = sites[rand.Next(sites.Count)].api_site_parameter;
         	var apiResponse = await _client.GetHotQuestions(_state.site, 10); 
         	if (!apiResponse.Success) return CreateResponse("Sorry. I can't access hot questions at the moment. Please try again later.");
         	var questions = apiResponse.items.ToList();
-        	var rand = new Random();
         	var question = questions[rand.Next(questions.Count)];
         	_state.question_id = question.question_id;
 

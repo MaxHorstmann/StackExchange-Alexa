@@ -38,9 +38,19 @@ namespace StackExchange.API
         	return await GetApiResponse<Question>($"questions/{question_id}", $"&site={site}&filter=withbody");
         }
 
+        public async Task<ApiResponse<Site>> GetSites()
+        {
+        	return await GetApiResponse<Site>($"sites", $"&pagesize=300");
+        }
+
         public async Task<ApiResponse<Question>> Upvote(string site, long question_id)
         {
         	return await GetApiResponse<Question>($"questions/{question_id}/upvote", $"&site={site}", true);
+        }
+
+        public async Task<ApiResponse<Question>> Downvote(string site, long question_id)
+        {
+        	return await GetApiResponse<Question>($"questions/{question_id}/downvote", $"&site={site}", true);
         }
 
         private async Task<ApiResponse<T>> GetApiResponse<T>(string route, string parameters, bool post = false)
@@ -94,5 +104,12 @@ namespace StackExchange.API
 		public string type => item_type == "chat_message" ? "chat message" : item_type;
 		public string title { get; set;}
 		public string body { get; set;}
+	}
+
+	public class Site
+	{
+		public string api_site_parameter {get; set;}
+		public string name {get; set;}
+		public string site_url {get; set;}
 	}
 }
