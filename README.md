@@ -19,3 +19,9 @@ Sample dialog:
 
 This skill hasn't been published yet to Amazon. Stay tuned!
 
+# Technical Details
+
+* Written in C# / .NET Core
+* Hosted on Amazon Lambda ([setup instructions](https://github.com/MaxHorstmann/StackExchange-Alexa/blob/master/setup.md)).
+* Uses the public [Stack Exchange API](https://api.stackexchange.com). See [StackApps Post](https://stackapps.com/questions/7480).
+
