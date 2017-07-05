@@ -70,6 +70,7 @@ namespace StackExchange.Alexa
             	if (intentRequest.Intent.Name=="HotQuestionDetailsIntent") 
             			return await GetHotQuestionDetailsIntentResponse();
             	if (intentRequest.Intent.Name=="UpvoteIntent") return await GetUpvoteIntentResponse();
+            	if (intentRequest.Intent.Name=="DownvoteIntent") return await GetDownvoteIntentResponse();
             	if (intentRequest.Intent.Name=="AMAZON.HelpIntent") return CreateResponse(HelpText + MainMenuOptions);
             	if (intentRequest.Intent.Name=="AMAZON.CancelIntent") return await GetLaunchRequestResponse();
             	if (intentRequest.Intent.Name=="AMAZON.StopIntent") return CreateResponse("Ok, bye!", true);
