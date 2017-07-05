@@ -211,7 +211,7 @@ namespace StackExchange.Alexa
         	{
         		return CreateResponse($"<p>{response.error_message}</p>");
         	}
-        	return CreateResponse($"<p>Ok, you favorited this question!</p>", false);
+        	return CreateResponse($"<p>Ok! The question has been added to your favorites, so you can find it again later.</p>", false);
         }
 
         private SkillResponse CreateResponse(
