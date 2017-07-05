@@ -7,6 +7,9 @@ InboxIntent check messages
 InboxIntent check my messages
 HotQuestionIntent hot question
 HotQuestionIntent hot questions
+HotQuestionIntent next question
+HotQuestionIntent another question
+HotQuestionIntent different question
 HotQuestionIntent questions
 HotQuestionIntent hot
 HotQuestionIntent browse hot questions

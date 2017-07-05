@@ -113,19 +113,19 @@ namespace StackExchange.Alexa
         {
         	var rand = new Random();
 
-        	// pick random site
-        	var sites = (await _client.GetSites()).items.ToList();
-        	sites = sites.Where(m => m.site_type == "main_site" && m.site_state == "normal").ToList();
+        	var sites = (await _client.GetSites())
+        		.items
+        		.Where(m => m.site_type == "main_site" && m.site_state == "normal")
+        		.ToList();  // TODO cache this somwehere, maybe Redis
         	var randomSite = sites[rand.Next(sites.Count)];
         	_state.site = randomSite.api_site_parameter;
 
-			// pick random hot question        	
-        	var questions = (await _client.GetHotQuestions(_state.site, 10)).items.ToList(); 
+        	const int NumberOfHotQuestions = 10;
+        	var questions = (await _client.GetHotQuestions(_state.site, NumberOfHotQuestions)).items.ToList(); 
         	var question = questions[rand.Next(questions.Count)];
         	_state.question_id = question.question_id;
 
         	var sb = new StringBuilder();
-        	sb.Append($"<p>{sites.Count} sites.</p>");
         	sb.Append($"<p>Here's a hot question from {randomSite.name}:</p>");
         	sb.Append($"<p>{question.title}</p>");
         	sb.Append($"<p>Say: more details, next question, or I'm done.</p>");
@@ -169,17 +169,38 @@ namespace StackExchange.Alexa
         	return CreateResponse(sb.ToString(), false);
         }
 
+        enum VoteType
+        {
+        	Upvote = 0,
+        	Downvote = 1
+        }
+
         private async Task<SkillResponse> GetUpvoteIntentResponse()
         {
+        	return await GetVoteIntentResponse(VoteType.Upvote);
+        }
+
+        private async Task<SkillResponse> GetDownvoteIntentResponse()
+        {
+        	return await GetVoteIntentResponse(VoteType.Downvote);
+        }
+
+        private async Task<SkillResponse> GetVoteIntentResponse(VoteType voteType)
+        {
         	if ((_state?.site == null) || (_state?.question_id == null)) return await GetHotQuestionIntentResponse();
-        	var response = await _client.Upvote(_state.site, _state.question_id.Value);
+
+        	var response = voteType == VoteType.Downvote ? 
+        		await _client.Downvote(_state.site, _state.question_id.Value) :
+        		await _client.Upvote(_state.site, _state.question_id.Value);
+
         	if (!response.Success)
         	{
-        		return CreateResponse($"<p>Sorry, I wasn't able to upvote the question for you.</p><p>{response.error_message}</p>");
+        		return CreateResponse($"<p>{response.error_message}</p>");
         	}
         	var score = response.items.First().score;
-        	return CreateResponse($"<p>Ok! With your upvote, the question now has a score of {score}.</p>", false);
+        	return CreateResponse($"<p>Ok! The question now has a score of {score}.</p>", false);
         }
+
 
         private SkillResponse CreateResponse(
         		string ssml, 
