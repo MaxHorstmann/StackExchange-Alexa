@@ -120,7 +120,7 @@ namespace StackExchange.Alexa
 
         	var networkUsers = await _client.GetNetworkUsers();
 
-        	if ((networkUsers.items == null) || (networkUsers.items.Any()))
+        	if ((networkUsers.items == null) || (!networkUsers.items.Any()))
         	{
         		return CreateResponse("<p>Looks like you do not yet have an account on any site. Please go to stackexchange.com and sign up for a few sites, then try again!</p>", true);
         	}
