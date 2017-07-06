@@ -17,7 +17,7 @@ namespace StackExchange.Alexa
     {
         private const string WelcomeText = "<p>Welcome to Stack Exchange!</p>";
 
-        private const string MainMenuOptions = "<p>Please say: inbox, hot questions, help, or I'm done.</p>";
+        private const string MainMenuOptions = "<p>Please say: inbox, hot questions, or help.</p>";
 
         private const string HelpText = @"<p>Stack Exchange is a network of 150+ Q&A communities including Stack Overflow, 
                 the preeminent site for programmers to find, ask, and answer questions about software development.
