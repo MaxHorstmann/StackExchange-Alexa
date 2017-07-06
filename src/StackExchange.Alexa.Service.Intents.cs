@@ -17,7 +17,7 @@ namespace StackExchange.Alexa
     {
         private const string WelcomeText = "<p>Welcome to Stack Exchange!</p>";
 
-        private const string MainMenuOptions = "<p>Please say: inbox, hot question, help, or I'm done.</p>";
+        private const string MainMenuOptions = "<p>Please say: inbox, hot questions, help, or I'm done.</p>";
 
         private const string HelpText = @"<p>Stack Exchange is a network of 150+ Q&A communities including Stack Overflow, 
                 the preeminent site for programmers to find, ask, and answer questions about software development.
@@ -32,7 +32,7 @@ namespace StackExchange.Alexa
 
         private async Task<SkillResponse> GetInboxIntentResponse()
         {
-            var apiResponse = await _client.GetInbox();
+            var apiResponse = await _client.GetInbox(true);
             if (!apiResponse.Success) 
                 return CreateResponse(@"<p>In order to check your inbox, please enable account linking.</p>
                     <p>You can enable account linking for the Stack Exchange skill, open the Amazon Alexa mobile app, 
@@ -42,22 +42,30 @@ namespace StackExchange.Alexa
 	        if (apiResponse.items.Count() == 0)
 	        {
 	        	sb.AppendLine("<p>There are no unread items in your inbox.</p>");
+                apiResponse = await _client.GetInbox(false);
+                if (apiResponse.items.Count() > 0)
+                {
+                    sb.AppendLine("<p>Here are some recent messages which you probably already saw:</p>");
+                    apiResponse.items = apiResponse.items.Take(5);
+                }
 	        }
 	        else
 	        {
 	        	sb.AppendLine($"<p>There are {apiResponse.items.Count()} unread items in your inbox.</p>");
-	        	var i = 0;
-	        	foreach (var item in apiResponse.items)
-	        	{
-	        		i++;
-	        		sb.Append("<p>");
-	        		sb.AppendLine($"<s><say-as interpret-as=\"ordinal\">{i}</say-as> message</s>");
-	        		sb.AppendLine($"Type: {item.type}.");
-	        		sb.AppendLine($"Title: {item.title}.");	
-	        		sb.AppendLine($"Body: {item.body}.");
-	        		sb.Append("</p><p></p><p></p>");
-	        	}
 	        }
+
+            if (apiResponse.items.Count() > 0)
+            {
+                var i = 0;
+                foreach (var item in apiResponse.items)
+                {
+                    i++;
+                    sb.Append($"<p>{item.summary}</p>");
+                    sb.AppendLine("<break time=\"1s\"/>");
+                }
+            }
+
+            sb.AppendLine(MainMenuOptions);
         	return CreateResponse(sb.ToString());
         }
 

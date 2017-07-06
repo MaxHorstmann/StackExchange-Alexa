@@ -23,9 +23,9 @@ namespace StackExchange.API
       		_accessToken = accessToken;
       	}
 
-        public async Task<ApiResponse<InboxItem>> GetInbox()
+        public async Task<ApiResponse<InboxItem>> GetInbox(bool unread = true)
         {
-        	return await GetApiResponse<InboxItem>("inbox/unread", "&filter=withbody");
+        	return await GetApiResponse<InboxItem>(unread ? "inbox/unread" : "inbox", "&filter=withbody");
         }
 
         public async Task<ApiResponse<NetworkUser>> GetNetworkUsers()
@@ -128,9 +128,28 @@ namespace StackExchange.API
 	public class InboxItem
 	{
 		public string item_type { get; set;}
-		public string type => item_type == "chat_message" ? "chat message" : item_type;
 		public string title { get; set;}
 		public string body { get; set;}
+
+        public string summary 
+        { 
+            get 
+            {
+                switch (item_type)
+                {
+                    // comment, chat_message, new_answer, careers_message, careers_invitations, meta_question, post_notice, or moderator_message
+                    case "comment": return $"Comment on {title}: {body}";
+                    case "chat_message": return $"Chat message in {title}: {body}";
+                    case "new_answer": return $"New answer on {title}: {body}";
+                    case "careers_message": return $"Job message. {title}. {body}";
+                    case "careers_invitations": return $"You have new Careers Invitations."; // deprecated
+                    case "meta_question": return "Meta question on {title}: {body}";
+                    case "post_notice": return "Post notice on {title}: {body}";
+                    case "moderator_message": return "Moderator message. {title}. {body}";
+                }
+                return body;
+            }
+        }
 	}
 
 	public class Site
