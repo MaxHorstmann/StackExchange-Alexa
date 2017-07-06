@@ -47,7 +47,7 @@ namespace StackExchange.Alexa
                 context.Logger.LogLine("Unhandled exception:");
                 context.Logger.LogLine(ex.ToString());
                 context.Logger.LogLine(JsonConvert.SerializeObject(ex));
-                return CreateResponse($"Sorry, there was a technical problem. {ex}");
+                return CreateResponse($"Sorry, there was a technical problem. Please try again later.");
             }
         }
 
