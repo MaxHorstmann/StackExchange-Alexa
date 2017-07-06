@@ -32,9 +32,13 @@ namespace StackExchange.Alexa
 
         private async Task<SkillResponse> GetInboxIntentResponse()
         {
+            var apiResponse = await _client.GetInbox();
+            if (!apiResponse.Success) 
+                return CreateResponse(@"<p>In order to check your inbox, please enable account linking.</p>
+                    <p>You can enable account linking for the Stack Exchange skill, open the Amazon Alexa mobile app, 
+                    or go to Alexa.amazon.com</p>");
+
 			var sb = new StringBuilder();
-			var apiResponse = await _client.GetInbox();
-			if (!apiResponse.Success) return CreateResponse("Sorry. I'm having trouble reading your inbox at the moment. Please try again later.");
 	        if (apiResponse.items.Count() == 0)
 	        {
 	        	sb.AppendLine("<p>There are no unread items in your inbox.</p>");
