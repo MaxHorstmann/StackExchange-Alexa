@@ -28,6 +28,11 @@ namespace StackExchange.API
         	return await GetApiResponse<InboxItem>("inbox/unread", "&filter=withbody");
         }
 
+        public async Task<ApiResponse<NetworkUser>> GetNetworkUsers()
+        {
+        	return await GetApiResponse<NetworkUser>("me/associated", "&pagesize=100");
+        }
+
         public async Task<ApiResponse<Question>> GetHotQuestions(string site, int count)
         {
         	return await GetApiResponse<Question>("questions", $"&order=desc&sort=hot&pagesize={count}&site={site}");
@@ -118,5 +123,13 @@ namespace StackExchange.API
 		public string site_url {get; set;}
 		public string site_type {get; set;}
 		public string site_state {get; set;}
+	}
+
+	public class NetworkUser
+	{
+		public long account_id {get; set;}
+		public long user_id {get; set;}
+		public string site_name {get; set;}
+		public string site_url {get; set;}
 	}
 }

@@ -32,14 +32,14 @@ namespace StackExchange.Alexa
     	// Main entry point
     	public async Task<SkillResponse> GetResponse(SkillRequest request, ILambdaContext context)
         {
-            context.Logger.LogLine(JsonConvert.SerializeObject(input);
+            context.Logger.LogLine(JsonConvert.SerializeObject(request));
             try
             {
             	_context = context;
             	_state = RestoreState(request);
 				_client = new Client(StackApiKey, request?.Session?.User?.AccessToken); // StackExchange API client
 				var response = await RouteRequest(request);
-	            context.Logger.LogLine(JsonConvert.SerializeObject(response);
+	            context.Logger.LogLine(JsonConvert.SerializeObject(response));
 				return response;
             }
             catch (Exception ex)
@@ -47,7 +47,7 @@ namespace StackExchange.Alexa
                 context.Logger.LogLine("Unhandled exception:");
                 context.Logger.LogLine(ex.ToString());
                 context.Logger.LogLine(JsonConvert.SerializeObject(ex));
-                return CreateResponse("Sorry, there was a technical problem.");
+                return CreateResponse($"Sorry, there was a technical problem. {ex}");
             }
         }
 
@@ -118,14 +118,24 @@ namespace StackExchange.Alexa
         {
         	var rand = new Random();
 
+        	var networkUsers = await _client.GetNetworkUsers();
+
+        	if ((networkUsers.items == null) || (networkUsers.items.Any()))
+        	{
+        		return CreateResponse("<p>Looks like you do not yet have an account on any site. Please go to stackexchange.com and sign up for a few sites, then try again!</p>", true);
+        	}
+
+        	var sitesWhereUserHasAccount = networkUsers.items.Select(m => m.site_url).ToList();
+
         	var sites = (await _client.GetSites())
         		.items
-        		.Where(m => m.site_type == "main_site" && m.site_state == "normal")
+        		.Where(m => m.site_type == "main_site" && m.site_state == "normal" && sitesWhereUserHasAccount.Contains(m.site_url))
         		.ToList();  // TODO cache this somwehere, maybe Redis
+
         	var randomSite = sites[rand.Next(sites.Count)];
         	_state.site = randomSite.api_site_parameter;
 
-        	const int NumberOfHotQuestions = 10;
+        	const int NumberOfHotQuestions = 5;
         	var questions = (await _client.GetHotQuestions(_state.site, NumberOfHotQuestions)).items.ToList(); 
         	var question = questions[rand.Next(questions.Count)];
         	_state.question_id = question.question_id;
