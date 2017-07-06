@@ -19,11 +19,12 @@ namespace StackExchange.Alexa
 
         private const string MainMenuOptions = "<p>Please say: inbox, hot questions, or help.</p>";
 
+        private const string AccountLinkingInfo = "<p>To enable account linking for the Stack Exchange skill, open the Amazon Alexa mobile app, or go to Alexa.amazon.com</p>";
+
         private const string HelpText = @"<p>Stack Exchange is a network of 150+ Q&A communities including Stack Overflow, 
                 the preeminent site for programmers to find, ask, and answer questions about software development.
                 To learn more, please go to stackexchange.com or stackoverflow.com. In order to check your
-                inbox and cast upvotes and downvotes, you need to open the Amazon Alexa app on your mobile device
-                and set up account linking. </p>";
+                inbox, add favorite questions, and cast votes, you need to set up account linking. </p>" + AccountLinkingInfo;
 
         private async Task<SkillResponse> GetLaunchRequestResponse()
         {
@@ -35,8 +36,7 @@ namespace StackExchange.Alexa
             var apiResponse = await _client.GetInbox(true);
             if (!apiResponse.Success) 
                 return CreateResponse(@"<p>In order to check your inbox, please enable account linking.</p>
-                    <p>You can enable account linking for the Stack Exchange skill, open the Amazon Alexa mobile app, 
-                    or go to Alexa.amazon.com</p>");
+                    <p></p>");
 
 			var sb = new StringBuilder();
 	        if (apiResponse.items.Count() == 0)
@@ -75,17 +75,26 @@ namespace StackExchange.Alexa
 
         	var networkUsers = await _client.GetNetworkUsers();
 
-        	if ((networkUsers.items == null) || (!networkUsers.items.Any()))
-        	{
-        		return CreateResponse("<p>Looks like you do not yet have an account on any site. Please go to stackexchange.com and sign up for a few sites, then try again!</p>", true);
-        	}
-
         	var sitesWhereUserHasAccount = networkUsers.items.Select(m => m.site_url).ToList();
 
         	var sites = (await _client.GetSites())
         		.items
-        		.Where(m => m.site_type == "main_site" && m.site_state == "normal" && sitesWhereUserHasAccount.Contains(m.site_url))
+        		.Where(m => m.site_type == "main_site" && m.site_state == "normal")
         		.ToList();  // TODO cache this somwehere, maybe Redis
+
+            var userHasAccountOnSite = false;
+            if ((networkUsers.items != null) && (networkUsers.items.Any()))
+            {
+                if (rand.Next(100)<25) // 25% of questions from sites where user does NOT have an account yet
+                {
+                    sites = sites.Where(m => !sitesWhereUserHasAccount.Contains(m.site_url)).ToList();
+                }
+                else
+                {
+                    sites = sites.Where(m => sitesWhereUserHasAccount.Contains(m.site_url)).ToList();
+                    userHasAccountOnSite = true;
+                }
+            }
 
         	var randomSite = sites[rand.Next(sites.Count)];
         	_state.site = randomSite.api_site_parameter;
@@ -98,6 +107,11 @@ namespace StackExchange.Alexa
         	var sb = new StringBuilder();
         	sb.Append($"<p>Here's a hot question from {randomSite.name}:</p>");
         	sb.Append($"<p>{question.title}</p>");
+            sb.AppendLine("<break time=\"1s\"/>");
+            if (!userHasAccountOnSite) 
+            {
+                sb.Append($"<p>By the way, you do not have an account on {randomSite.name} yet. If you like, you can create one on {randomSite.short_site_url}.</p>");
+            }
         	sb.Append($"<p>Say: more details, next question, or I'm done.</p>");
 
         	return CreateResponse(sb.ToString(), false);
@@ -192,8 +206,8 @@ namespace StackExchange.Alexa
 
         private async Task<SkillResponse> GetVoteIntentResponse(VoteType voteType)
         {
+            if (_client.IsLoggedIn) return CreateResponse("<p>In order to vote on questions and answers, please set up account linking.</p>" + AccountLinkingInfo);
         	if ((_state?.site == null) || (_state?.question_id == null)) return await GetHotQuestionIntentResponse();
-
         	var response = voteType == VoteType.Downvote ? 
         		await _client.Downvote(_state.site, _state.question_id.Value) :
         		await _client.Upvote(_state.site, _state.question_id.Value);
@@ -203,11 +217,12 @@ namespace StackExchange.Alexa
         		return CreateResponse($"<p>{response.error_message}</p>");
         	}
         	var score = response.items.First().score;
-        	return CreateResponse($"<p>Ok! The question now has a score of {score}.</p>", false);
+        	return CreateResponse($"<p>Ok! After your vote, the question now has a score of {score}.</p>", false);
         }
 
         private async Task<SkillResponse> GetFavoriteIntentResponse()
         {
+            if (_client.IsLoggedIn) return CreateResponse("<p>In order to add favorite questions, please set up account linking.</p>" + AccountLinkingInfo);
         	if ((_state?.site == null) || (_state?.question_id == null)) return await GetHotQuestionIntentResponse();
         	var response = await _client.Favorite(_state.site, _state.question_id.Value);
         	if (!response.Success)

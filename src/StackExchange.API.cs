@@ -17,6 +17,8 @@ namespace StackExchange.API
       	private readonly string _accessToken;
       	private readonly string _key;
 
+        public bool IsLoggedIn => (_accessToken != null) && (_accessToken.Length > 0);
+
       	public Client(string key, string accessToken)
       	{
       		_key = key;
@@ -159,6 +161,7 @@ namespace StackExchange.API
 		public string site_url {get; set;}
 		public string site_type {get; set;}
 		public string site_state {get; set;}
+        public string short_site_url => site_url.Replace("https://", "");
 	}
 
 	public class NetworkUser
