@@ -10,6 +10,9 @@
       "intent": "HotQuestionDetailsIntent"
     },
     {
+      "intent": "HotQuestionAnswersIntent"
+    },
+    {
       "intent": "UpvoteIntent"
     },
     {

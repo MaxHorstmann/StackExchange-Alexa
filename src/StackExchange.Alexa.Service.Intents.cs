@@ -131,6 +131,41 @@ namespace StackExchange.Alexa
         	return CreateResponse(sb.ToString(), false);
         }
 
+
+        private async Task<SkillResponse> GetHotQuestionAnswersIntentResponse()
+        {
+            if ((_state?.site == null) || (_state?.question_id == null)) return await GetHotQuestionIntentResponse();
+
+            var answers = await _client.GetAnswers(_state.site, _state.question_id.Value);
+            if (!answers.Success) return CreateResponse("Sorry. There was a technical issue. Please try again later.");
+            
+            if (!answers.items.Any()) 
+            {
+                return CreateResponse("<p>Actually, there aren't any answers for this question yet.</p>");
+            }
+
+            var answer = answers.items.First();
+
+            var sb = new StringBuilder();
+
+            if (answers.items.Count() == 1)
+            {
+                sb.AppendLine("<p>This question has one answer. It is:</p>");
+            }
+            else
+            {
+                sb.AppendLine($"<p>This question has {answers.items.Count()} answers. Here's the top answer:</p>");
+            }
+            
+            sb.AppendLine($"<p>{answer.bodyNoHtml}</p>");
+            sb.AppendLine("<break time=\"2s\"/>");
+            sb.AppendLine("<p>Please say: upvote, downvote, next question, or I'm done.</p>");
+            // TODO need to vote on answer, not question
+
+            return CreateResponse(sb.ToString(), false);
+        }
+
+
         enum VoteType
         {
         	Upvote = 0,

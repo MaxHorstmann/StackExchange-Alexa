@@ -43,6 +43,11 @@ namespace StackExchange.API
         	return await GetApiResponse<Question>($"questions/{question_id}", $"&site={site}&filter=withbody");
         }
 
+        public async Task<ApiResponse<Answer>> GetAnswers(string site, long question_id)
+        {
+        	return await GetApiResponse<Answer>($"questions/{question_id}/answers", $"&site={site}&sort=activity&order=desc&filter=withbody");
+        }
+
         public async Task<ApiResponse<Site>> GetSites()
         {
         	return await GetApiResponse<Site>($"sites", $"&pagesize=300");
@@ -107,6 +112,18 @@ namespace StackExchange.API
 
 		public string bodyNoHtml => Regex.Replace(body ?? string.Empty, "<.*?>", String.Empty);
 	}
+
+	public class Answer
+	{
+		public long answer_id {get; set;}
+		public long question_id {get; set;}
+		public bool is_accepted {get; set;}
+		public string body { get; set;}
+		public long score {get; set;}
+
+		public string bodyNoHtml => Regex.Replace(body ?? string.Empty, "<.*?>", String.Empty);
+	}
+
 
 	public class InboxItem
 	{

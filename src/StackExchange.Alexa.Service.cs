@@ -70,8 +70,8 @@ namespace StackExchange.Alexa
             	var intentRequest = (IntentRequest)input.Request;
             	if (intentRequest.Intent.Name=="InboxIntent") return await GetInboxIntentResponse();
             	if (intentRequest.Intent.Name=="HotQuestionIntent") return await GetHotQuestionIntentResponse();
-            	if (intentRequest.Intent.Name=="HotQuestionDetailsIntent") 
-            			return await GetHotQuestionDetailsIntentResponse();
+            	if (intentRequest.Intent.Name=="HotQuestionDetailsIntent") return await GetHotQuestionDetailsIntentResponse();
+                if (intentRequest.Intent.Name=="HotQuestionAnswersIntent") return await GetHotQuestionAnswersIntentResponse();
             	if (intentRequest.Intent.Name=="UpvoteIntent") return await GetUpvoteIntentResponse();
             	if (intentRequest.Intent.Name=="DownvoteIntent") return await GetDownvoteIntentResponse();
             	if (intentRequest.Intent.Name=="FavoriteIntent") return await GetFavoriteIntentResponse();

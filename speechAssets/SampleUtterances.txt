@@ -27,6 +27,8 @@ FavoriteIntent add to favorites
 FavoriteIntent star
 FavoriteIntent add star
 FavoriteIntent favorite this question
+HotQuestionAnswersIntent answer
+HotQuestionAnswersIntent answers
 AMAZON.HelpIntent help
 AMAZON.HelpIntent get help
 AMAZON.HelpIntent help me
