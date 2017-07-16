@@ -1,0 +1,31 @@
+InboxIntent Nachrichten
+InboxIntent Nachrichten abhören
+InboxIntent habe ich neue Nachrichten
+InboxIntent Briefkasten
+HotQuestionIntent hot question
+HotQuestionIntent fragen
+HotQuestionIntent heiße Fragen
+HotQuestionIntent aktuelle Fragen
+HotQuestionIntent neue Fragen
+HotQuestionIntent nächste Frage
+HotQuestionDetailsIntent Details
+HotQuestionDetailsIntent mehr Details
+HotQuestionDetailsIntent erzähl mir mehr
+HotQuestionAnswersIntent Antwort
+HotQuestionAnswersIntent Antworten
+UpvoteIntent Upvote
+UpvoteIntent Dafür stimmen
+UpvoteIntent Wähle hoch
+UpvoteIntent Plus eins
+UpvoteIntent Aufwerten
+DownvoteIntent downvote
+DownvoteIntent Dagegen stimmen
+DownvoteIntent Wähle runter
+DownvoteIntent Minus eins
+DownvoteIntent Abwerten
+FavoriteIntent Favorit
+FavoriteIntent Frage merken
+FavoriteIntent Merken
+AMAZON.HelpIntent Hilfe
+AMAZON.StopIntent Stop
+AMAZON.StopIntent Quatsch
