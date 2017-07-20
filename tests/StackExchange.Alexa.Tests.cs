@@ -6,11 +6,24 @@ using Alexa.NET.Response;
 using Alexa.NET.Request.Type;
 using Amazon.Lambda.Core;
 using Newtonsoft.Json;
+using Mixpanel;
 
 namespace StackExchange.Alexa.Tests
 {
     public class AllTests
     {
+
+        [Fact]
+        public async Task TestMixpanel()
+        {
+            MixpanelConfig.Global.SerializeJsonFn = JsonConvert.SerializeObject;
+            var mc = new MixpanelClient("<token>");
+            await mc.TrackAsync("TestEvent", new {
+                Time = DateTime.UtcNow
+            });
+        }
+
+
         [Fact]
         public async Task TestUpvoteIntent()
         {
