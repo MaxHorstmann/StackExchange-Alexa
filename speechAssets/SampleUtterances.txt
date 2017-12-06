@@ -36,5 +36,7 @@ AMAZON.HelpIntent what
 AMAZON.StopIntent exit
 AMAZON.StopIntent I'm done
 AMAZON.StopIntent done
+AMAZON.StopIntent cancel
 AMAZON.StopIntent quit
 AMAZON.StopIntent that is enough
+AMAZON.CancelIntent cancel

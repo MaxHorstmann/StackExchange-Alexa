@@ -91,7 +91,7 @@ namespace StackExchange.Alexa
             	if (intentRequest.Intent.Name=="DownvoteIntent") return await GetDownvoteIntentResponse();
             	if (intentRequest.Intent.Name=="FavoriteIntent") return await GetFavoriteIntentResponse();
             	if (intentRequest.Intent.Name=="AMAZON.HelpIntent") return CreateResponse(HelpText + MainMenuOptions);
-            	if (intentRequest.Intent.Name=="AMAZON.CancelIntent") return await GetLaunchRequestResponse();
+            	if (intentRequest.Intent.Name=="AMAZON.CancelIntent") return CreateResponse("Ok, bye!", true);
             	if (intentRequest.Intent.Name=="AMAZON.StopIntent") return CreateResponse("Ok, bye!", true);
             }
             return CreateResponse("Sorry, not sure what you're saying.");
