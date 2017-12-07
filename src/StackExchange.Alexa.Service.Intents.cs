@@ -23,7 +23,7 @@ namespace StackExchange.Alexa
 
         private const string HelpText = @"<p>Stack Exchange is a network of 150+ Q&A communities including Stack Overflow," 
                 +@"the preeminent site for programmers to find, ask, and answer questions about software development. "
-                +@"To learn more, please go to stackexchange.com or stackoverflow.com. In order to check your "+
+                +@"To learn more, please go to stackexchange.com or stackoverflow.com. In order to check your "
                 +@"inbox, add favorite questions, and cast votes, you need to set up account linking. </p>" + AccountLinkingInfo;
 
         private async Task<SkillResponse> GetLaunchRequestResponse()
