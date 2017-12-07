@@ -19,7 +19,7 @@ namespace StackExchange.Alexa
     public partial class Service
     {
       	const string StackApiKey = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
-        const string MixPanelToken = "<token>"; // this one IS a secret
+        const string MixPanelToken = ""; // this one IS a secret
 
     	private class State
     	{
@@ -39,7 +39,7 @@ namespace StackExchange.Alexa
             MixpanelConfig.Global.SerializeJsonFn = JsonConvert.SerializeObject;            
             _mixpanel = new MixpanelClient(MixPanelToken);
             
-            await _mixpanel.TrackAsync("GetResponse.Begin", new {});
+            //await _mixpanel.TrackAsync("GetResponse.Begin", new {});
 
             try
             {
@@ -48,7 +48,7 @@ namespace StackExchange.Alexa
 				_client = new Client(StackApiKey, request?.Session?.User?.AccessToken); // StackExchange API client
 				var response = await RouteRequest(request);
 	            context.Logger.LogLine(JsonConvert.SerializeObject(response));
-                await _mixpanel.TrackAsync("GetResponse.End", new {});
+                //await _mixpanel.TrackAsync("GetResponse.End", new {});
 				return response;
             }
             catch (Exception ex)
