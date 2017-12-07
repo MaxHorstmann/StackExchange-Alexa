@@ -17,6 +17,8 @@ HotQuestionIntent browse questions
 HotQuestionDetailsIntent more details
 HotQuestionDetailsIntent question details
 HotQuestionDetailsIntent tell me more
+HotQuestionAnswersIntent answer
+HotQuestionAnswersIntent answers
 UpvoteIntent upvote
 UpvoteIntent up vote
 DownvoteIntent downvote
@@ -27,8 +29,6 @@ FavoriteIntent add to favorites
 FavoriteIntent star
 FavoriteIntent add star
 FavoriteIntent favorite this question
-HotQuestionAnswersIntent answer
-HotQuestionAnswersIntent answers
 AMAZON.HelpIntent help
 AMAZON.HelpIntent get help
 AMAZON.HelpIntent help me
@@ -36,7 +36,5 @@ AMAZON.HelpIntent what
 AMAZON.StopIntent exit
 AMAZON.StopIntent I'm done
 AMAZON.StopIntent done
-AMAZON.StopIntent cancel
 AMAZON.StopIntent quit
 AMAZON.StopIntent that is enough
-AMAZON.CancelIntent cancel
