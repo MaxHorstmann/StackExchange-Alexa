@@ -18,9 +18,6 @@ namespace StackExchange.Alexa
 {
     public partial class Service
     {
-      	const string StackApiKey = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
-        const string MixPanelToken = "myToken"; // this one IS a secret
-
     	private class State
     	{
     		public long? question_id {get; set;}
