@@ -19,7 +19,7 @@ namespace StackExchange.Alexa
     public partial class Service
     {
       	const string StackApiKey = "dzqlqab4VD4bynFom)Z1Ng(("; // not a secret
-        const string MixPanelToken = ""; // this one IS a secret
+        const string MixPanelToken = "myToken"; // this one IS a secret
 
     	private class State
     	{
@@ -99,11 +99,15 @@ namespace StackExchange.Alexa
 
         private SkillResponse CreateResponse(
         		string ssml, 
-        		bool shouldEndSession = false)
+        		bool shouldEndSession = false,
+        		bool displayLinkAccountCard = false)
         {
         	var sessionAttributes = new Dictionary<string, object>();
         	sessionAttributes.Add("site", _state?.site);
         	sessionAttributes.Add("question_id", _state?.question_id);
+
+
+        	var card = displayLinkAccountCard ? new LinkAccountCard() : null;
 
         	return new SkillResponse()
         	{
@@ -115,7 +119,8 @@ namespace StackExchange.Alexa
         			OutputSpeech = new SsmlOutputSpeech()
 		            {
 		           		Ssml = "<speak>" + ssml + "</speak>"
-		            }
+		            },
+		            Card = card
         		}
         	};
         }

@@ -33,12 +33,10 @@ namespace StackExchange.Alexa
 
         private async Task<SkillResponse> GetInboxIntentResponse()
         {
-            if (!_client.IsLoggedIn) return CreateResponse("<p>In order to check your inbox, please set up account linking.</p>" + AccountLinkingInfo);
+            if (!_client.IsLoggedIn) return CreateResponse("<p>In order to check your inbox, please set up account linking.</p>" + AccountLinkingInfo, displayLinkAccountCard: true);
 
             var apiResponse = await _client.GetInbox(true);
-            if (!apiResponse.Success) 
-                return CreateResponse(@"<p>In order to check your inbox, please enable account linking.</p>
-                    <p></p>");
+            if (!apiResponse.Success) return CreateResponse("<p>In order to check your inbox, please enable account linking.</p>" + AccountLinkingInfo, displayLinkAccountCard: true);
 
 			var sb = new StringBuilder();
 	        if (apiResponse.items.Count() == 0)
@@ -208,7 +206,7 @@ namespace StackExchange.Alexa
 
         private async Task<SkillResponse> GetVoteIntentResponse(VoteType voteType)
         {
-            if (!_client.IsLoggedIn) return CreateResponse("<p>In order to vote on questions and answers, please set up account linking.</p>" + AccountLinkingInfo);
+            if (!_client.IsLoggedIn) return CreateResponse("<p>In order to vote on questions and answers, please set up account linking.</p>" + AccountLinkingInfo, displayLinkAccountCard: true);
         	if ((_state?.site == null) || (_state?.question_id == null)) return await GetHotQuestionIntentResponse();
         	var response = voteType == VoteType.Downvote ? 
         		await _client.Downvote(_state.site, _state.question_id.Value) :
@@ -224,7 +222,7 @@ namespace StackExchange.Alexa
 
         private async Task<SkillResponse> GetFavoriteIntentResponse()
         {
-            if (!_client.IsLoggedIn) return CreateResponse("<p>In order to add favorite questions, please set up account linking.</p>" + AccountLinkingInfo);
+            if (!_client.IsLoggedIn) return CreateResponse("<p>In order to add favorite questions, please set up account linking.</p>" + AccountLinkingInfo, displayLinkAccountCard: true);
         	if ((_state?.site == null) || (_state?.question_id == null)) return await GetHotQuestionIntentResponse();
         	var response = await _client.Favorite(_state.site, _state.question_id.Value);
         	if (!response.Success)
