@@ -2,6 +2,8 @@
 
 Amazon Alexa skill for [Stack Exchange](https://stackexchange.com) / [Stack Overflow](https://stackoverflow.com). 
 
+You can install it on your Echo device [here](https://t.co/TvjgA2L1Ik).
+
 Check your inbox and browse hot questions using voice commands! (Requires [account linking](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/linking-an-alexa-user-with-a-user-in-your-system))
 
 Sample dialog:
@@ -14,13 +16,6 @@ Sample dialog:
 "Hot questions!" - "Please say: technology, business, or life!"
 
 "Business!" - "Here's a hot question from 'The Workplace': 'As a developer, what can I do about bad/lack of requirements from the product owner?' Want to hear more?"
-
-# Enable Skill on my Echo
-
-This skill hasn't been published yet to Amazon. Mainly, I'm waiting for Amazon to resolve [this](https://forums.developer.amazon.com/questions/75718/oauth-state-parameter-too-long-can-it-be-shortened.html).
-
-In the meantime, feel free to [contact me](https://twitter.com/Max_Horstmann) if you're interested in beta testing.
-
 
 # Technical Details
 
